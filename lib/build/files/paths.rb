@@ -309,7 +309,7 @@ module Build
 				"<Composite #{@files.inspect}>"
 			end
 		end
-	
-		NONE = Composite.new([]).freeze
+		
+		List::NONE = Composite.new([]).freeze
 	end
 end
