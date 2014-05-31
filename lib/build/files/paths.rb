@@ -47,6 +47,15 @@ module Build
 				end
 			end
 			
+			# Ensure the path has an absolute root if it doesn't already:
+			def to_absolute(root)
+				if @root == "."
+					self.rebase(root)
+				else
+					self
+				end
+			end
+			
 			attr :root
 			
 			def to_str
