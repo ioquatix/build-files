@@ -18,58 +18,43 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-require 'minitest/autorun'
-
 require 'build/files'
 
-class TestFiles < MiniTest::Test
-	include Build::Files
-	
-	def test_inclusion
-		# Glob all test files:
-		glob = Glob.new(__dir__, "*.rb")
+module Build::Files::StateSpec
+	describe Build::Files::State do
+		let(:files) {Build::Files::Glob.new(__dir__, "*.rb")}
 		
-		assert glob.count > 0
+		it "should have no changes initially" do
+			state = Build::Files::State.new(files)
+			
+			expect(state.update!).to be false
+			
+			expect(state.changed).to be == []
+			expect(state.added).to be == []
+			expect(state.removed).to be == []
+			expect(state.missing).to be == []
+		end
 		
-		# Should include this file:
-		assert_includes glob, __FILE__
+		it "should report missing files" do
+			rebased_files = files.to_paths.rebase(File.join(__dir__, 'foo'))
+			state = Build::Files::State.new(rebased_files)
+			
+			# Some changes were detected:
+			expect(state.update!).to be true
+			
+			# Some files are missing:
+			expect(state.missing).to_not be_empty
+		end
 		
-		# Glob should intersect self:
-		assert glob.intersects?(glob)
-	end
-	
-	def test_composites
-		lib = File.join(__dir__, "../lib")
-		
-		test_glob = Glob.new(__dir__, "*.rb")
-		lib_glob = Glob.new(lib, "*.rb")
-		
-		both = test_glob + lib_glob
-		
-		# List#roots is the generic accessor for Lists
-		assert both.roots.include? test_glob.root
-		
-		# The composite should include both:
-		assert both.include?(__FILE__)
-	end
-	
-	def test_roots
-		test_glob = Glob.new(__dir__, "*.rb")
-		
-		assert_kind_of Path, test_glob.first
-		
-		assert_equal __dir__, test_glob.first.root
-	end
-	
-	def test_renaming
-		glob = Glob.new(__dir__, "*.rb")
-		
-		paths = glob.map {|path| path + ".txt"}
-		
-		assert_equal(paths.first, glob.first + ".txt")
-	end
-	
-	def test_none
-		assert_equal 0, NONE.count
+		it "should not be confused by duplicates" do
+			state = Build::Files::State.new(files + files)
+			
+			expect(state.update!).to be false
+			
+			expect(state.changed).to be == []
+			expect(state.added).to be == []
+			expect(state.removed).to be == []
+			expect(state.missing).to be == []
+		end
 	end
 end
