@@ -35,6 +35,10 @@ module Build
 			def <=> other
 				@time <=> other.time
 			end
+			
+			def inspect
+				"<FileTime #{@path.inspect} #{@time.inspect}>"
+			end
 		end
 		
 		class State
@@ -97,7 +101,7 @@ module Build
 						# puts "Missing: #{path}"
 					end
 				end
-			
+				
 				@removed = last_times.keys
 				
 				@oldest_time = file_times.min
@@ -105,23 +109,27 @@ module Build
 				
 				return @added.size > 0 || @changed.size > 0 || @removed.size > 0 || @missing.size > 0
 			end
-		
+			
 			attr :oldest_time
 			attr :newest_time
-		
+			
 			attr :missing
-		
+			
 			def missing?
 				!@missing.empty?
 			end
-		
+			
 			# Outputs is a list of full paths and must not include any patterns/globs.
 			def intersects?(outputs)
 				@files.intersects?(outputs)
 			end
-		
+			
 			def empty?
 				@files.to_a.empty?
+			end
+			
+			def inspect
+				"<State Added:#{@added} Removed:#{@removed} Changed:#{@changed} Missing:#{@missing}>"
 			end
 		end
 	
@@ -130,68 +138,74 @@ module Build
 				@input_state = State.new(inputs)
 				@output_state = State.new(outputs)
 			end
-		
+			
 			attr :input_state
 			attr :output_state
-		
+			
 			# Output is dirty if files are missing or if latest input is older than any output.
 			def dirty?
+				@dirty = []
+				
 				if @output_state.missing?
 					# puts "Output file missing: #{output_state.missing.inspect}"
-				
+					
 					return true
 				end
-			
+				
 				# If there are no inputs, we are always clean as long as outputs exist:
 				# if @input_state.empty?
 				#	return false
 				# end
-			
+				
 				oldest_output_time = @output_state.oldest_time
 				newest_input_time = @input_state.newest_time
-			
+				
 				if newest_input_time and oldest_output_time
 					# if newest_input_time > oldest_output_time
 					#	puts "Out of date file: #{newest_input_time.inspect} > #{oldest_output_time.inspect}"
 					# end
-				
+					
 					return newest_input_time > oldest_output_time
 				end
-			
+				
 				# puts "Missing file dates: #{newest_input_time.inspect} < #{oldest_output_time.inspect}"
-			
+				
 				return true
 			end
-		
+			
 			def fresh?
 				not dirty?
 			end
-		
+			
 			def files
 				@input_state.files + @output_state.files
 			end
-		
+			
 			def added
 				@input_state.added + @output_state.added
 			end
-		
+			
 			def removed
 				@input_state.removed + @output_state.removed
 			end
-		
+			
 			def changed
 				@input_state.changed + @output_state.changed
 			end
-		
+			
 			def update!
 				input_changed = @input_state.update!
 				output_changed = @output_state.update!
 			
 				input_changed or output_changed
 			end
-		
+			
 			def intersects?(outputs)
 				@input_state.intersects?(outputs) or @output_state.intersects?(outputs)
+			end
+			
+			def inspect
+				"<IOState Input:#{@input_state.inspect} Output:#{@output_state.inspect}>"
 			end
 		end
 	
