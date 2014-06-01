@@ -27,10 +27,19 @@ module Build
 				[a.size, b.size].min.times{|i| return i if a[i] != b[i]}
 			end
 			
+			# Returns a list of components for a path, either represented as a Path instance or a String.
+			def self.components(path)
+				if Path === path
+					path.components
+				else
+					path.split(File::SEPARATOR)
+				end
+			end
+			
 			# Return the shortest relative path to get to path from root:
 			def self.shortest_path(path, root)
-				path_components = path.components
-				root_components = root.components
+				path_components = Path.components(path)
+				root_components = Path.components(root)
 				
 				# Find the common prefix:
 				i = prefix_length(path_components, root_components)
