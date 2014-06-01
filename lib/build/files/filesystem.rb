@@ -18,11 +18,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-require_relative 'files/list'
-require_relative 'files/glob'
-require_relative 'files/directory'
-
-require_relative 'files/state'
-require_relative 'files/monitor'
-
-require_relative 'files/filesystem'
+module Build
+	module Files
+		# Represents a file path with an absolute root and a relative offset:
+		class Path
+			def exist?
+				File.exist? self
+			end
+			
+			def directory?
+				File.directory? self
+			end
+		end
+	end
+end
