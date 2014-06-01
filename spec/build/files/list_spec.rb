@@ -19,11 +19,44 @@
 # THE SOFTWARE.
 
 require 'build/files'
+require 'build/files/list'
+require 'build/files/glob'
 
-module Build::Files::FilesSpec
+module Build::Files::ListSpec
 	include Build::Files
 	
-	describe Build::Files do
+	describe Build::Files::Paths do
+		let(:path) {Path.new("/foo/bar/baz", "/foo")}
+		
+		it "maps paths with a new extension" do
+			paths = Paths.new([
+				Path.join('/foo/bar', 'alice'),
+				Path.join('/foo/bar', 'bob'),
+				Path.join('/foo/bar', 'charles'),
+				path
+			])
+			
+			expect(paths).to include(path)
+			
+			expect(paths).to be_intersects(paths)
+			expect(paths).to_not be_intersects(Paths::NONE)
+			
+			mapped_paths = paths.map {|path| path + ".o"}
+			
+			expect(mapped_paths).to be_kind_of(Paths)
+			expect(mapped_paths.roots).to be == paths.roots
+		end
+		
+		it "globs multiple files" do
+			glob = Glob.new(__dir__, '*.rb')
+			
+			expect(glob.count).to be > 1
+			
+			mapped_paths = glob.map {|path| path + ".txt"}
+			
+			expect(glob.roots).to be == mapped_paths.roots
+		end
+		
 		it "should intersect one file in the glob" do
 			# Glob all test files:
 			glob = Glob.new(__dir__, "*.rb")
@@ -72,6 +105,14 @@ module Build::Files::FilesSpec
 			expect(Paths::NONE).to be_kind_of List
 			
 			expect(Paths::NONE.count).to be 0
+		end
+		
+		it "can be used as key in hash" do
+			cache = {}
+			
+			cache[Paths.new(path)] = true
+			
+			expect(cache).to include(Paths.new(path))
 		end
 	end
 end

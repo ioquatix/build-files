@@ -18,7 +18,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-require_relative 'files/paths'
+require_relative 'files/list'
 require_relative 'files/glob'
 require_relative 'files/directory'
 

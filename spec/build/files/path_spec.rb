@@ -19,8 +19,7 @@
 # THE SOFTWARE.
 
 require 'build/files'
-require 'build/files/paths'
-require 'build/files/glob'
+require 'build/files/path'
 
 module Build::Files::PathSpec
 	include Build::Files
@@ -66,46 +65,20 @@ module Build::Files::PathSpec
 			expect(object_path.root).to be == "/foo"
 			expect(object_path.relative_path).to be == "bar/baz.o"
 		end
-	end
-	
-	describe Build::Files::Paths do
-		let(:path) {Path.new("/foo/bar/baz", "/foo")}
 		
-		it "maps paths with a new extension" do
-			paths = Paths.new([
-				Path.join('/foo/bar', 'alice'),
-				Path.join('/foo/bar', 'bob'),
-				Path.join('/foo/bar', 'charles'),
-				path
-			])
+		it "should give the shortest path" do
+			spec_path = Path.new(__FILE__)
+			source_path = Path.new(File.expand_path("../../../lib/build/files/list.rb"))
 			
-			expect(paths).to include(path)
+			input = Path.new("/a/b/c/file.cpp")
+			output = Path.new("/a/b/c/d/e/")
 			
-			expect(paths).to be_intersects(paths)
-			expect(paths).to_not be_intersects(Paths::NONE)
+			expect(input.root).to be == "/a/b/c"
+			expect(output.root).to be == "/a/b/c/d/e"
 			
-			mapped_paths = paths.map {|path| path + ".o"}
+			short = input.shortest_path(output)
 			
-			expect(mapped_paths).to be_kind_of(Paths)
-			expect(mapped_paths.roots).to be == paths.roots
-		end
-		
-		it "globs multiple files" do
-			glob = Glob.new(__dir__, '*.rb')
-			
-			expect(glob.count).to be > 1
-			
-			mapped_paths = glob.map {|path| path + ".txt"}
-			
-			expect(glob.roots).to be == mapped_paths.roots
-		end
-		
-		it "can be used as key in hash" do
-			cache = {}
-			
-			cache[Paths.new(path)] = true
-			
-			expect(cache).to include(Paths.new(path))
+			expect(File.expand_path(short, output)).to be == input
 		end
 	end
 end
