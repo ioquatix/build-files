@@ -66,7 +66,7 @@ module Build::Files::PathSpec
 			expect(object_path.relative_path).to be == "bar/baz.o"
 		end
 		
-		it "should give the shortest path" do
+		it "should give the shortest path for outer paths" do
 			spec_path = Path.new(__FILE__)
 			source_path = Path.new(File.expand_path("../../../lib/build/files/list.rb"))
 			
@@ -77,6 +77,22 @@ module Build::Files::PathSpec
 			expect(output.root).to be == "/a/b/c/d/e"
 			
 			short = input.shortest_path(output)
+			
+			expect(short).to be == "../../file.cpp"
+			
+			expect(File.expand_path(short, output)).to be == input
+		end
+		
+		it "should give the shortest path for inner paths" do
+			input = Path.new("/a/b/c/file.cpp")
+			output = Path.new("/a/")
+			
+			expect(input.root).to be == "/a/b/c"
+			expect(output.root).to be == "/a"
+			
+			short = input.shortest_path(output)
+			
+			expect(short).to be == "b/c/file.cpp"
 			
 			expect(File.expand_path(short, output)).to be == input
 		end
