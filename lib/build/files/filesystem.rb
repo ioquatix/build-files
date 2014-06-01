@@ -29,6 +29,10 @@ module Build
 			def directory?
 				File.directory? self
 			end
+			
+			def mtime
+				File.mtime self
+			end
 		end
 	end
 end
