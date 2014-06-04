@@ -106,7 +106,7 @@ module Build
 			end
 			
 			def relative_path
-				@relative_path ||= Path.relative_path(@root, @full_path)
+				@relative_path ||= Path.relative_path(@root.to_s, @full_path)
 			end
 			
 			def relative_parts
