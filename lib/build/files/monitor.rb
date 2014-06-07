@@ -27,12 +27,12 @@ module Build
 		class Monitor
 			def initialize
 				@directories = Hash.new { |hash, key| hash[key] = Set.new }
-		
+				
 				@updated = false
 			end
-	
+			
 			attr :updated
-	
+			
 			# Notify the monitor that files in these directories have changed.
 			def update(directories, *args)
 				directories.each do |directory|
@@ -81,12 +81,12 @@ module Build
 				handle
 			end
 		end
-
+		
 		def self.run_with_fsevent(monitor, options = {}, &block)
 			require 'rb-fsevent'
-	
+			
 			fsevent ||= FSEvent.new
-	
+			
 			catch(:interrupt) do
 				while true
 					fsevent.watch monitor.roots do |directories|
@@ -103,7 +103,7 @@ module Build
 				end
 			end
 		end
-
+		
 		def self.run_with_polling(monitor, options = {}, &block)
 			catch(:interrupt) do
 				while true
@@ -115,9 +115,9 @@ module Build
 				end
 			end
 		end
-
-		def self.run(monitor, options = {}, &block)
-			run_with_polling(monitor, options, &block)
+		
+		def run(monitor, options = {}, &block)
+			self.class.run_with_polling(monitor, options, &block)
 		end
 	end
 end
