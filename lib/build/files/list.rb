@@ -40,8 +40,8 @@ module Build
 				other.any?{|path| include?(path)}
 			end
 			
-			def with(**args)
-				return to_enum(:with, **args) unless block_given?
+			def with(*args)
+				return to_enum(:with, *args) unless block_given?
 				
 				paths = []
 				
