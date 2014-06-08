@@ -119,6 +119,10 @@ module Build
 				self.class.new(@full_path + extension, @root)
 			end
 			
+			def /(path)
+				self.class.new(File.join(@full_path, path), @root)
+			end
+			
 			def rebase(root)
 				self.class.new(File.join(root, relative_path), root)
 			end

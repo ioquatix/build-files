@@ -96,5 +96,11 @@ module Build::Files::PathSpec
 			
 			expect(File.expand_path(short, output)).to be == input
 		end
+		
+		it "should append a path" do
+			path = Path.new("/a/b/c")
+			
+			expect(path/"d/e/f").to be == "/a/b/c/d/e/f"
+		end
 	end
 end
