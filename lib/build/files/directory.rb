@@ -23,6 +23,10 @@ require_relative 'list'
 module Build
 	module Files
 		class Directory < List
+			def self.join(*args)
+				self.new(Path.join(*args))
+			end
+			
 			def initialize(path)
 				@path = path
 			end
