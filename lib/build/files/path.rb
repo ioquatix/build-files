@@ -60,7 +60,7 @@ module Build
 			end
 			
 			def self.[] path
-				self === path ? path : self.new(path)
+				self === path ? path : self.new(path.to_s)
 			end
 			
 			# Both paths must be full absolute paths, and path must have root as an prefix.
