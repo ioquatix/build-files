@@ -21,13 +21,24 @@
 require 'build/files'
 require 'build/files/path'
 
+require 'pathname'
+
 module Build::Files::PathSpec
 	include Build::Files
 	
 	describe Build::Files::Path do
 		let(:path) {Path.new("/foo/bar/baz", "/foo")}
 		
+		it "should convert to path" do
+			pathname = Pathname("/foo/bar/baz")
+			
+			expect(Path[pathname]).to be == path
+			expect(Path["/foo/bar/baz"]).to be == path
+		end
+		
 		it "should convert to string" do
+			expect(path.to_s).to be == "/foo/bar/baz"
+			
 			# The to_str method should return the full path (i.e. the same as to_s):
 			expect(path.to_s).to be == path.to_str
 			
