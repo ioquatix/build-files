@@ -44,7 +44,7 @@ module Build
 			def each
 				return to_enum(:each) unless block_given?
 				
-				Dir.glob(full_path + "/**/*") do |path|
+				Dir.glob(@path + "**/*") do |path|
 					yield Path.new(path, @path.root)
 				end
 			end
@@ -64,6 +64,14 @@ module Build
 		
 			def rebase(root)
 				self.class.new(@path.rebase(root))
+			end
+			
+			def to_str
+				@path.to_str
+			end
+			
+			def to_path
+				@path
 			end
 		end
 	end
