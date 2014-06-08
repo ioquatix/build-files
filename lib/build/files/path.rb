@@ -59,6 +59,10 @@ module Build
 				return full_path.slice(relative_offset..-1)
 			end
 			
+			def self.[] path
+				self === path ? path : self.new(path)
+			end
+			
 			# Both paths must be full absolute paths, and path must have root as an prefix.
 			def initialize(full_path, root = nil, relative_path = nil)
 				# This is the object identity:
