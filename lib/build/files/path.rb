@@ -95,6 +95,7 @@ module Build
 			end
 			
 			attr :root
+			attr :full_path
 			
 			def length
 				@full_path.length
