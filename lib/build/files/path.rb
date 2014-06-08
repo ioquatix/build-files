@@ -77,9 +77,12 @@ module Build
 				end
 			end
 			
-			
 			def components
 				@components ||= @full_path.split(File::SEPARATOR)
+			end
+			
+			def basename
+				self.components.last
 			end
 			
 			# Ensure the path has an absolute root if it doesn't already:
@@ -114,9 +117,9 @@ module Build
 			end
 			
 			def relative_parts
-				basename, _, filename = self.relative_path.rpartition(File::SEPARATOR)
+				dirname, _, basename = self.relative_path.rpartition(File::SEPARATOR)
 				
-				return basename, filename
+				return dirname, basename
 			end
 			
 			def append(extension)
