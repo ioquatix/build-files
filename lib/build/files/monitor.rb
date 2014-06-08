@@ -80,6 +80,10 @@ module Build
 		
 				handle
 			end
+			
+			def run(options = {}, &block)
+				Files::run_with_polling(self, options, &block)
+			end
 		end
 		
 		def self.run_with_fsevent(monitor, options = {}, &block)
@@ -114,10 +118,6 @@ module Build
 					sleep(options[:latency] || 5.0)
 				end
 			end
-		end
-		
-		def run(monitor, options = {}, &block)
-			self.class.run_with_polling(monitor, options, &block)
 		end
 	end
 end
