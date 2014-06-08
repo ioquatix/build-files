@@ -96,14 +96,6 @@ module Build
 			
 			attr :root
 			
-			def to_str
-				@full_path
-			end
-			
-			def to_path
-				@full_path
-			end
-			
 			def length
 				@full_path.length
 			end
@@ -149,6 +141,14 @@ module Build
 				self.class.shortest_path(self, root)
 			end
 			
+			def to_str
+				@full_path
+			end
+			
+			def to_path
+				@full_path
+			end
+			
 			def to_s
 				@full_path
 			end
@@ -158,11 +158,11 @@ module Build
 			end
 			
 			def hash
-				@full_path.hash
+				[@root, @full_path].hash
 			end
 			
 			def eql?(other)
-				@full_path.eql?(other.to_s)
+				@root.eql?(other.root) and @full_path.eql?(other.full_path)
 			end
 			
 			def ==(other)
