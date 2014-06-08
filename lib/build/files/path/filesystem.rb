@@ -20,8 +20,23 @@
 
 module Build
 	module Files
-		# Represents a file path with an absolute root and a relative offset:
 		class Path
+			def open(mode, &block)
+				File.open(self, mode, &block)
+			end
+			
+			def read(mode = File::RDONLY)
+				open(mode) do |file|
+					file.read
+				end
+			end
+			
+			def write(buffer, mode = File::CREAT|File::TRUNC|File::WRONLY)
+				open(mode) do |file|
+					file.write(buffer)
+				end
+			end
+			
 			def exist?
 				File.exist? self
 			end
