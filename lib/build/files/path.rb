@@ -119,11 +119,11 @@ module Build
 				return basename, filename
 			end
 			
-			def +(extension)
+			def append(extension)
 				self.class.new(@full_path + extension, @root)
 			end
 			
-			def /(path)
+			def +(path)
 				self.class.new(File.join(@full_path, path), @root)
 			end
 			
@@ -132,7 +132,10 @@ module Build
 			end
 			
 			def with(root: @root, extension: nil)
-				self.class.new(File.join(root, extension ? relative_path + extension : relative_path), root)
+				# self.relative_path should be a string so using + to add an extension should be fine.
+				relative_path = extension ? self.relative_path + extension : self.relative_path
+				
+				self.class.new(File.join(root, relative_path), root, relative_path)
 			end
 			
 			def self.join(root, relative_path)

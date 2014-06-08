@@ -60,7 +60,7 @@ module Build::Files::PathSpec
 			
 			expect(renamed_path.relative_path).to be == 'bar/baz.txt'
 			
-			object_path = path + ".o"
+			object_path = path.append(".o")
 		
 			expect(object_path.root).to be == "/foo"
 			expect(object_path.relative_path).to be == "bar/baz.o"
@@ -100,7 +100,7 @@ module Build::Files::PathSpec
 		it "should append a path" do
 			path = Path.new("/a/b/c")
 			
-			expect(path/"d/e/f").to be == "/a/b/c/d/e/f"
+			expect(path + "d/e/f").to be == "/a/b/c/d/e/f"
 		end
 	end
 end
