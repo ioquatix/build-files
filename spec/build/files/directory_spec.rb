@@ -18,49 +18,22 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-require_relative 'list'
+require 'build/files/directory'
 
-module Build
-	module Files
-		class Directory < List
-			def initialize(path)
-				@path = path
-			end
-			
-			attr :path
-			
-			def root
-				@path.root
-			end
-			
-			def roots
-				[root]
-			end
-			
-			def each
-				return to_enum(:each) unless block_given?
-				
-				Dir.glob(full_path + "/**/*") do |path|
-					yield Path.new(path, @path.root)
-				end
-			end
+module Build::Files::DirectorySpec
+	include Build::Files
+	
+	describe Build::Files::Directory do
+		let(:path) {Path.new("/foo/bar/baz", "/bob")}
+		let(:directory) {Directory.new(path)}
 		
-			def eql?(other)
-				other.kind_of?(self.class) and @path.eql?(other.path)
-			end
+		it "has a root and path component" do
+			expect(directory.root).to be == path.root
+			expect(directory.path).to be == path
+		end
 		
-			def hash
-				@path.hash
-			end
-		
-			def include?(path)
-				# Would be true if path is a descendant of full_path.
-				path.start_with?(@path)
-			end
-		
-			def rebase(root)
-				self.class.new(@path.rebase(root))
-			end
+		it "includes subpaths" do
+			expect(directory).to be_include "/foo/bar/baz/bob/dole"
 		end
 	end
 end
