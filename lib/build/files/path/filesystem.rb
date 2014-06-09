@@ -18,6 +18,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+require 'fileutils'
+
 module Build
 	module Files
 		class Path
@@ -47,6 +49,10 @@ module Build
 			
 			def mtime
 				File.mtime self
+			end
+			
+			def mkpath
+				FileUtils.mkpath self
 			end
 		end
 	end
