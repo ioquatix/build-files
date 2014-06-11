@@ -101,7 +101,7 @@ module Build
 			end
 			
 			def eql?(other)
-				other.kind_of?(self.class) and @list.eql?(other.list)
+				self.class.eql?(other.class) and @list.eql?(other.list)
 			end
 		
 			def hash
@@ -159,7 +159,7 @@ module Build
 			end
 			
 			def eql?(other)
-				other.kind_of?(self.class) and @files.eql?(other.files)
+				self.class.eql?(other.class) and @files.eql?(other.files)
 			end
 		
 			def hash

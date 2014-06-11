@@ -50,7 +50,7 @@ module Build
 			end
 		
 			def eql?(other)
-				other.kind_of?(self.class) and @path.eql?(other.path)
+				self.class.eql?(other.class) and @path.eql?(other.path)
 			end
 		
 			def hash

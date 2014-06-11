@@ -49,7 +49,7 @@ module Build
 			end
 			
 			def eql?(other)
-				other.kind_of?(self.class) and @root.eql?(other.root) and @pattern.eql?(other.pattern)
+				self.class.eql?(other.class) and @root.eql?(other.root) and @pattern.eql?(other.pattern)
 			end
 		
 			def hash

@@ -163,7 +163,7 @@ module Build
 			end
 			
 			def eql?(other)
-				@root.eql?(other.root) and @full_path.eql?(other.full_path)
+				self.class.eql?(other.class) and @root.eql?(other.root) and @full_path.eql?(other.full_path)
 			end
 			
 			def ==(other)
