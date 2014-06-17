@@ -113,5 +113,12 @@ module Build::Files::PathSpec
 			
 			expect(path + "d/e/f").to be == "/a/b/c/d/e/f"
 		end
+		
+		it "should have a new root" do
+			rerooted_path = path / "cat"
+			
+			expect(rerooted_path.root).to be == "/foo/bar/baz"
+			expect(rerooted_path.relative_path).to be == "cat"
+		end
 	end
 end

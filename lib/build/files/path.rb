@@ -123,6 +123,11 @@ module Build
 				self.class.new(File.join(@full_path, path), @root)
 			end
 			
+			# Define a new root with a sub-path:
+			def /(path)
+				self.class.new(File.join(self, path), self)
+			end
+			
 			def rebase(root)
 				self.class.new(File.join(root, relative_path), root)
 			end
