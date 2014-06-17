@@ -83,11 +83,13 @@ module Build
 							# Path was valid last update:
 							if modified_time != last_time
 								@changed << path
+								
 								# puts "Changed: #{path}"
 							end
 						else
 							# Path didn't exist before:
 							@added << path
+							
 							# puts "Added: #{path}"
 						end
 					
@@ -98,11 +100,13 @@ module Build
 						end
 					else
 						@missing << path
+						
 						# puts "Missing: #{path}"
 					end
 				end
 				
 				@removed = last_times.keys
+				# puts "Removed: #{@removed.inspect}" if @removed.size > 0
 				
 				@oldest_time = file_times.min
 				@newest_time = file_times.max
