@@ -36,6 +36,15 @@ module Build::Files::PathSpec
 			expect(Path["/foo/bar/baz"]).to be == path
 		end
 		
+		it "should be equal" do
+			expect(path).to be_eql path
+			expect(path).to be == path
+			
+			different_root_path = Path.join("/foo/bar", "baz")
+			expect(path).to_not be_eql different_root_path
+			expect(path).to be == different_root_path
+		end
+		
 		it "should convert to string" do
 			expect(path.to_s).to be == "/foo/bar/baz"
 			
