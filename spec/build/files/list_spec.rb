@@ -96,9 +96,19 @@ module Build::Files::ListSpec
 		it "maps paths with new extension" do
 			glob = Glob.new(__dir__, "*.rb")
 			
-			paths = glob.map {|path| path + ".txt"}
+			paths = glob.map {|path| path.append ".txt"}
 			
-			expect(paths.first).to be == (glob.first + ".txt")
+			expect(paths.first).to be == (glob.first.append ".txt")
+			expect(paths.first.to_s).to be_end_with ".rb.txt"
+		end
+		
+		it "should map paths using with" do
+			glob = Glob.new(__dir__, "*.rb")
+			
+			paths = glob.with extension: ".txt"
+			
+			expect(paths.first[0]).to be == (glob.first)
+			expect(paths.first[1]).to be == (glob.first.append ".txt")
 		end
 		
 		it "should define an empty set of files" do
