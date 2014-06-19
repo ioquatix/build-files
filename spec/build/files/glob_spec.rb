@@ -18,62 +18,18 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-require_relative 'list'
+require 'build/files/glob'
 
-module Build
-	module Files
-		class Path
-			def glob(pattern)
-				Glob.new(self, pattern)
-			end
-		end
+module Build::Files::GlobSpec
+	include Build::Files
+	
+	describe Build::Files::Glob do
+		let(:path) {Path.new(__dir__)}
 		
-		class Glob < List
-			def initialize(root, pattern)
-				@root = root
-				@pattern = pattern
-			end
+		it "can glob paths" do
+			paths = path.glob("*.rb")
 			
-			attr :root
-			attr :pattern
-			
-			def roots
-				[@root]
-			end
-			
-			def full_pattern
-				Path.join(@root, @pattern)
-			end
-		
-			# Enumerate all paths matching the pattern.
-			def each(&block)
-				return to_enum(:each) unless block_given?
-				
-				Dir.glob(full_pattern) do |path|
-					yield Path.new(path, @root)
-				end
-			end
-			
-			def eql?(other)
-				self.class.eql?(other.class) and @root.eql?(other.root) and @pattern.eql?(other.pattern)
-			end
-		
-			def hash
-				[@root, @pattern].hash
-			end
-		
-			def include?(path)
-				File.fnmatch(full_pattern, path)
-			end
-		
-			def rebase(root)
-				self.class.new(root, @pattern)
-			end
-			
-			def inspect
-				"<Glob #{full_pattern.inspect}>"
-			end
-			
+			expect(paths.count).to be >= 1
 		end
 	end
 end
