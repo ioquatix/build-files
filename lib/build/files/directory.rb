@@ -27,14 +27,12 @@ module Build
 				self.new(Path.join(*args))
 			end
 			
-			def initialize(path)
-				@path = path
+			def initialize(root)
+				@root = root
 			end
 			
-			attr :path
-			
 			def root
-				@path.root
+				@root
 			end
 			
 			def roots
@@ -44,34 +42,34 @@ module Build
 			def each
 				return to_enum(:each) unless block_given?
 				
-				Dir.glob(@path + "**/*") do |path|
-					yield Path.new(path, @path.root)
+				Dir.glob(@root + "**/*") do |path|
+					yield Path.new(path, @root)
 				end
 			end
 		
 			def eql?(other)
-				self.class.eql?(other.class) and @path.eql?(other.path)
+				self.class.eql?(other.class) and @root.eql?(other.root)
 			end
 		
 			def hash
-				@path.hash
+				@root.hash
 			end
 		
 			def include?(path)
 				# Would be true if path is a descendant of full_path.
-				path.start_with?(@path)
+				path.start_with?(@root)
 			end
 		
 			def rebase(root)
-				self.class.new(@path.rebase(root))
+				self.class.new(@root.rebase(root))
 			end
 			
 			def to_str
-				@path.to_str
+				@root.to_str
 			end
 			
 			def to_path
-				@path
+				@root
 			end
 		end
 	end

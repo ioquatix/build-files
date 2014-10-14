@@ -28,8 +28,8 @@ module Build::Files::DirectorySpec
 		let(:directory) {Directory.new(path)}
 		
 		it "has a root and path component" do
-			expect(directory.root).to be == path.root
-			expect(directory.path).to be == path
+			expect(directory.root).to be == path
+			expect(directory.roots).to be_include(path)
 		end
 		
 		it "includes subpaths" do
