@@ -4,6 +4,7 @@ Build::Files is a set of idiomatic classes for dealing with paths and monitoring
 
 [![Build Status](https://secure.travis-ci.org/ioquatix/build-files.png)](http://travis-ci.org/ioquatix/build-files)
 [![Code Climate](https://codeclimate.com/github/ioquatix/build-files.png)](https://codeclimate.com/github/ioquatix/build-files)
+[![Coverage Status](https://coveralls.io/repos/ioquatix/build-files/badge.svg)](https://coveralls.io/r/ioquatix/build-files)
 
 ## Installation
 
