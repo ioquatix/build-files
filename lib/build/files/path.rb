@@ -42,7 +42,7 @@ module Build
 				root_components = Path.components(root)
 				
 				# Find the common prefix:
-				i = prefix_length(path_components, root_components)
+				i = prefix_length(path_components, root_components) || 0
 				
 				# The difference between the root path and the required path, taking into account the common prefix:
 				up = root_components.size - i
