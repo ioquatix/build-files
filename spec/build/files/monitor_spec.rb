@@ -1,4 +1,6 @@
-# Copyright, 2014, by Samuel G. D. Williams. <http://www.codeotaku.com>
+#!/usr/bin/env rspec
+
+# Copyright, 2015, by Samuel G. D. Williams. <http://www.codeotaku.com>
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -18,50 +20,55 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-require 'fileutils'
+require 'build/files/monitor'
+require 'build/files/path'
+require 'build/files/path/filesystem'
+require 'build/files/directory'
 
-module Build
-	module Files
-		class Path
-			def open(mode, &block)
-				File.open(self, mode, &block)
+module Build::Files::MonitorSpec
+	include Build::Files
+	
+	ROOT = File.expand_path('../tmp', __FILE__)
+	
+	describe Build::Files::Monitor do
+		let(:path) {Path.new(ROOT) + "test.txt"}
+		
+		before(:all) do
+			Path.new(ROOT).mkpath
+		end
+		
+		after(:all) do
+			Path.new(ROOT).rmpath
+		end
+		
+		it 'should detect additions' do
+			directory = Build::Files::Directory.new(ROOT)
+			monitor = Build::Files::Monitor.new
+			
+			changed = false
+			
+			monitor.track_changes(directory) do |state|
+				changed = state.added.include? path
 			end
 			
-			def read(mode = File::RDONLY)
-				open(mode) do |file|
-					file.read
-				end
+			thread = Thread.new do
+				sleep 1.0
+				
+				path.touch
 			end
 			
-			def write(buffer, mode = File::CREAT|File::TRUNC|File::WRONLY)
-				open(mode) do |file|
-					file.write(buffer)
-				end
+			triggered = 0
+			
+			monitor.run do
+				triggered += 1
+				
+				throw :interrupt
 			end
 			
-			def touch
-				FileUtils.touch self
-			end
+			thread.join
 			
-			def exist?
-				File.exist? self
-			end
-			
-			def directory?
-				File.directory? self
-			end
-			
-			def mtime
-				File.mtime self
-			end
-			
-			def mkpath
-				FileUtils.mkpath self
-			end
-			
-			def rmpath
-				FileUtils.rm_rf self
-			end
+			expect(changed).to be true
+			expect(triggered).to be == 1
 		end
 	end
 end

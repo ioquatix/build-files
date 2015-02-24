@@ -82,28 +82,61 @@ module Build
 			end
 			
 			def run(options = {}, &block)
-				Files::run_with_polling(self, options, &block)
+				default_driver = case RUBY_PLATFORM
+					when /linux/i; :inotify
+					when /darwin/i; :fsevent
+					else; :polling
+				end
+				
+				if driver = options.fetch(:driver, default_driver)
+					method_name = "run_with_#{driver}"
+					Files.send(method_name, self, options, &block)
+				end
+			end
+		end
+		
+		def self.run_with_inotify(monitor, options = {}, &block)
+			require 'rb-inotify'
+			
+			notifier = INotify::Notifier.new
+			
+			catch(:interrupt) do
+				while true
+					monitor.roots.each do |root|
+						notifier.watch root, :create, :modify, :delete do |event|
+							monitor.update([root])
+							
+							yield
+							
+							if monitor.updated
+								notifier.stop
+							end
+						end
+					end
+					
+					notifier.run
+				end
 			end
 		end
 		
 		def self.run_with_fsevent(monitor, options = {}, &block)
 			require 'rb-fsevent'
 			
-			fsevent ||= FSEvent.new
+			notifier = FSEvent.new
 			
 			catch(:interrupt) do
 				while true
-					fsevent.watch monitor.roots do |directories|
+					notifier.watch monitor.roots do |directories|
 						monitor.update(directories)
-				
+						
 						yield
-				
+						
 						if monitor.updated
-							fsevent.stop
+							notifier.stop
 						end
 					end
 			
-					fsevent.run
+					notifier.run
 				end
 			end
 		end
@@ -112,10 +145,10 @@ module Build
 			catch(:interrupt) do
 				while true
 					monitor.update(monitor.roots)
-			
+					
 					yield
-			
-					sleep(options[:latency] || 5.0)
+					
+					sleep(options[:latency] || 1.0)
 				end
 			end
 		end
