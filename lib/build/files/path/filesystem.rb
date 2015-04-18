@@ -51,17 +51,23 @@ module Build
 				File.directory? self
 			end
 			
-			def mtime
+			def modified_time
 				File.mtime self
 			end
 			
-			def mkpath
+			alias mtime modified_time
+			
+			def create
 				FileUtils.mkpath self
 			end
 			
-			def rmpath
+			alias mkpath create
+			
+			def delete
 				FileUtils.rm_rf self
 			end
+			
+			alias rmpath delete
 		end
 	end
 end
