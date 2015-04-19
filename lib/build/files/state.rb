@@ -140,6 +140,11 @@ module Build
 				"<State Added:#{@added} Removed:#{@removed} Changed:#{@changed} Missing:#{@missing}>"
 			end
 			
+			# Are these files dirty with respect to the given inputs?
+			def dirty?(inputs)
+				self.class.dirty?(inputs, self)
+			end
+			
 			def self.dirty?(inputs, outputs)
 				if outputs.missing?
 					# puts "Output file missing: #{output_state.missing.inspect}"
