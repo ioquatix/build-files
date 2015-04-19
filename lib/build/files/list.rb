@@ -146,6 +146,12 @@ module Build
 			
 			attr :files
 			
+			def freeze
+				self.roots
+				
+				super
+			end
+			
 			def each
 				return to_enum(:each) unless block_given?
 				
