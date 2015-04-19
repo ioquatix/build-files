@@ -41,26 +41,33 @@ module Build
 			end
 		end
 		
-		class State
+		# A stateful list of files captured at a specific time, which can then be checked for changes.
+		class State < Files::List
 			def initialize(files)
 				raise ArgumentError.new("Invalid files list: #{files}") unless Files::List === files
-			
+				
 				@files = files
-		
+				
 				@times = {}
-			
+				
 				update!
 			end
-	
+			
 			attr :files
-	
+			
 			attr :added
 			attr :removed
 			attr :changed
 			attr :missing
-		
+			
 			attr :times
-		
+			
+			def each
+				return to_enum(:each) unless block_given?
+				
+				@times.each_key{|path| yield path}
+			end
+			
 			def update!
 				last_times = @times
 				@times = {}
@@ -123,93 +130,34 @@ module Build
 				!@missing.empty?
 			end
 			
-			# Outputs is a list of full paths and must not include any patterns/globs.
-			def intersects?(outputs)
-				@files.intersects?(outputs)
-			end
-			
 			def empty?
-				@files.to_a.empty?
+				@times.empty?
 			end
 			
 			def inspect
 				"<State Added:#{@added} Removed:#{@removed} Changed:#{@changed} Missing:#{@missing}>"
 			end
-		end
-	
-		class IOState
-			def initialize(inputs, outputs)
-				@input_state = State.new(inputs)
-				@output_state = State.new(outputs)
-			end
 			
-			attr :input_state
-			attr :output_state
-			
-			# Output is dirty if files are missing or if latest input is older than any output.
-			def dirty?
-				@dirty = []
-				
-				if @output_state.missing?
+			def self.dirty?(inputs, outputs)
+				if outputs.missing?
 					# puts "Output file missing: #{output_state.missing.inspect}"
-					
 					return true
 				end
 				
-				# If there are no inputs, we are always clean as long as outputs exist:
-				# if @input_state.empty?
-				#	return false
-				# end
+				# If there are no inputs or no outputs, we are always clean:
+				if inputs.empty? or outputs.empty?
+					return false
+				end
 				
-				oldest_output_time = @output_state.oldest_time
-				newest_input_time = @input_state.newest_time
+				oldest_output_time = outputs.oldest_time
+				newest_input_time = inputs.newest_time
 				
 				if newest_input_time and oldest_output_time
-					# if newest_input_time > oldest_output_time
-					#	puts "Out of date file: #{newest_input_time.inspect} > #{oldest_output_time.inspect}"
-					# end
-					
+					# We are dirty if any inputs are newer (bigger) than any outputs:
 					return newest_input_time > oldest_output_time
 				end
 				
-				# puts "Missing file dates: #{newest_input_time.inspect} < #{oldest_output_time.inspect}"
-				
 				return true
-			end
-			
-			def fresh?
-				not dirty?
-			end
-			
-			def files
-				@input_state.files + @output_state.files
-			end
-			
-			def added
-				@input_state.added + @output_state.added
-			end
-			
-			def removed
-				@input_state.removed + @output_state.removed
-			end
-			
-			def changed
-				@input_state.changed + @output_state.changed
-			end
-			
-			def update!
-				input_changed = @input_state.update!
-				output_changed = @output_state.update!
-			
-				input_changed or output_changed
-			end
-			
-			def intersects?(outputs)
-				@input_state.intersects?(outputs) or @output_state.intersects?(outputs)
-			end
-			
-			def inspect
-				"<IOState Input:#{@input_state.inspect} Output:#{@output_state.inspect}>"
 			end
 		end
 	

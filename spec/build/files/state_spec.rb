@@ -56,5 +56,13 @@ module Build::Files::StateSpec
 			expect(state.removed).to be == []
 			expect(state.missing).to be == []
 		end
+		
+		it "should be clean with empty inputs or outputs" do
+			empty = Build::Files::State.new(Build::Files::Paths::NONE)
+			something = Build::Files::State.new(files)
+			
+			expect(Build::Files::State.dirty?(empty, something)).to be false
+			expect(Build::Files::State.dirty?(something, empty)).to be false
+		end
 	end
 end
