@@ -167,31 +167,5 @@ module Build
 				return true
 			end
 		end
-	
-		class Handle
-			def initialize(monitor, files, &block)
-				@monitor = monitor
-				@state = State.new(files)
-				@on_changed = block
-			end
-		
-			attr :monitor
-		
-			def commit!
-				@state.update!
-			end
-		
-			def directories
-				@state.files.roots
-			end
-		
-			def remove!
-				monitor.delete(self)
-			end
-		
-			def changed!
-				@on_changed.call(@state) if @state.update!
-			end
-		end
 	end
 end

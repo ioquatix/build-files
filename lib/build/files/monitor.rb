@@ -24,60 +24,85 @@ require 'build/files/state'
 
 module Build
 	module Files
+		class Handle
+			def initialize(monitor, files, &block)
+				@monitor = monitor
+				@state = State.new(files)
+				@on_changed = block
+			end
+		
+			attr :monitor
+		
+			def commit!
+				@state.update!
+			end
+		
+			def directories
+				@state.files.roots
+			end
+		
+			def remove!
+				monitor.delete(self)
+			end
+		
+			def changed!
+				@on_changed.call(@state) if @state.update!
+			end
+		end
+		
 		class Monitor
 			def initialize
 				@directories = Hash.new { |hash, key| hash[key] = Set.new }
 				
 				@updated = false
+				
+				@deletions = nil
 			end
 			
 			attr :updated
 			
 			# Notify the monitor that files in these directories have changed.
 			def update(directories, *args)
-				directories.each do |directory|
-					# directory = File.realpath(directory)
-					
-					@directories[directory].each do |handle|
-						handle.changed!(*args)
+				delay_deletions do
+					directories.each do |directory|
+						# directory = File.realpath(directory)
+						
+						@directories[directory].each do |handle|
+							handle.changed!(*args)
+						end
 					end
 				end
 			end
-	
+			
 			def roots
 				@directories.keys
 			end
-	
-			def delete(handle)
-				handle.directories.each do |directory|
-					@directories[directory].delete(handle)
 			
-					# Remove the entire record if there are no handles:
-					if @directories[directory].size == 0
-						@directories.delete(directory)
-				
-						@updated = true
-					end
+			def delete(handle)
+				if @deletions
+					@deletions << handle
+				else
+					purge(handle)
 				end
 			end
-	
+			
 			def track_changes(files, &block)
 				handle = Handle.new(self, files, &block)
-		
+				
 				add(handle)
 			end
-	
+			
 			def add(handle)
 				handle.directories.each do |directory|
 					@directories[directory] << handle
-			
+					
 					# We just added the first handle:
 					if @directories[directory].size == 1
 						# If the handle already existed, this might trigger unnecessarily.
 						@updated = true
 					end
 				end
-		
+				
 				handle
 			end
 			
@@ -91,6 +116,33 @@ module Build
 				if driver = options.fetch(:driver, default_driver)
 					method_name = "run_with_#{driver}"
 					Files.send(method_name, self, options, &block)
+				end
+			end
+			
+			protected
+			
+			def delay_deletions
+				@deletions = []
+				
+				yield
+				
+				@deletions.each do |handle|
+					purge(handle)
+				end
+				
+				@deletions = nil
+			end
+			
+			def purge(handle)
+				handle.directories.each do |directory|
+					@directories[directory].delete(handle)
+					
+					# Remove the entire record if there are no handles:
+					if @directories[directory].size == 0
+						@directories.delete(directory)
+						
+						@updated = true
+					end
 				end
 			end
 		end
@@ -135,7 +187,7 @@ module Build
 							notifier.stop
 						end
 					end
-			
+					
 					notifier.run
 				end
 			end
