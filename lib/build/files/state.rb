@@ -20,6 +20,8 @@
 
 require_relative 'list'
 
+require 'forwardable'
+
 module Build
 	module Files
 		# Represents a specific file on disk with a specific mtime.
@@ -45,6 +47,8 @@ module Build
 		
 		# A stateful list of files captured at a specific time, which can then be checked for changes.
 		class State < Files::List
+			extend Forwardable
+			
 			def initialize(files)
 				raise ArgumentError.new("Invalid files list: #{files}") unless Files::List === files
 				
@@ -64,21 +68,17 @@ module Build
 			
 			attr :times
 			
-			def each
-				return to_enum(:each) unless block_given?
-				
-				@times.each_key{|path| yield path}
-			end
+			def_delegators :@files, :each, :roots, :count
 			
 			def update!
 				last_times = @times
 				@times = {}
-			
+				
 				@added = []
 				@removed = []
 				@changed = []
 				@missing = []
-			
+				
 				file_times = []
 				
 				@files.each do |path|
