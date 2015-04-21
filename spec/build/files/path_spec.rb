@@ -29,6 +29,11 @@ module Build::Files::PathSpec
 	describe Build::Files::Path do
 		let(:path) {Path.new("/foo/bar/baz", "/foo")}
 		
+		it "should be inspectable" do
+			expect(path.inspect).to be_include path.root.to_s
+			expect(path.inspect).to be_include path.relative_path.to_s
+		end
+		
 		it "should convert to path" do
 			pathname = Pathname("/foo/bar/baz")
 			
@@ -123,11 +128,32 @@ module Build::Files::PathSpec
 			expect(path + "d/e/f").to be == "/a/b/c/d/e/f"
 		end
 		
+		it "should give a list of components" do
+			expect(Path.components(path)).to be == ["", "foo", "bar", "baz"]
+			expect(Path.components(path.to_s)).to be == ["", "foo", "bar", "baz"]
+		end
+		
+		it "should give a basename" do
+			expect(path.basename).to be == "baz"
+		end
+		
 		it "should have a new root" do
 			rerooted_path = path / "cat"
 			
 			expect(rerooted_path.root).to be == "/foo/bar/baz"
 			expect(rerooted_path.relative_path).to be == "cat"
+		end
+		
+		it "should give correct modes for reading" do
+			expect(path.for_reading).to be == [path.to_s, File::RDONLY]
+		end
+		
+		it "should give correct modes for writing" do
+			expect(path.for_writing).to be == [path.to_s, File::CREAT|File::TRUNC|File::WRONLY]
+		end
+		
+		it "should give correct modes for appending" do
+			expect(path.for_appending).to be == [path.to_s, File::CREAT|File::APPEND|File::WRONLY]
 		end
 	end
 end

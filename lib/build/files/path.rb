@@ -88,15 +88,6 @@ module Build
 				self.components.last
 			end
 			
-			# Ensure the path has an absolute root if it doesn't already:
-			def to_absolute(root)
-				if @root == "."
-					self.rebase(root)
-				else
-					self
-				end
-			end
-			
 			attr :root
 			attr :full_path
 			
