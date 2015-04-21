@@ -75,6 +75,9 @@ module Build
 					# Effectively dirname and basename:
 					@root, _, @relative_path = full_path.rpartition(File::SEPARATOR)
 				end
+				
+				# This improves the cost of hash/eql? slightly but the root cannot be deconstructed if it was an instance of Path.
+				# @root = @root.to_s
 			end
 			
 			def components
