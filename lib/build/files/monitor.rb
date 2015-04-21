@@ -179,6 +179,8 @@ module Build
 			catch(:interrupt) do
 				while true
 					notifier.watch monitor.roots do |directories|
+						directories.collect!{|directory| File.expand_path(directory)}
+						
 						monitor.update(directories)
 						
 						yield

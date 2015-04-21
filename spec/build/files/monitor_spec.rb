@@ -51,10 +51,14 @@ module Build::Files::MonitorSpec
 				changed = state.added.include? path
 			end
 			
+			touched = false
+			
 			thread = Thread.new do
-				sleep 1.0
+				sleep 0.1
 				
 				path.touch
+				
+				touched = true
 			end
 			
 			triggered = 0
@@ -62,13 +66,13 @@ module Build::Files::MonitorSpec
 			monitor.run do
 				triggered += 1
 				
-				throw :interrupt
+				throw :interrupt if touched
 			end
 			
 			thread.join
 			
 			expect(changed).to be true
-			expect(triggered).to be == 1
+			expect(triggered).to be >= 1
 		end
 	end
 end
