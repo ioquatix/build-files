@@ -19,6 +19,7 @@
 # THE SOFTWARE.
 
 require 'set'
+require 'logger'
 
 require 'build/files/state'
 
@@ -51,23 +52,26 @@ module Build
 		end
 		
 		class Monitor
-			def initialize
+			def initialize(logger: nil)
 				@directories = Hash.new { |hash, key| hash[key] = Set.new }
 				
 				@updated = false
 				
 				@deletions = nil
+				
+				@logger = logger || Logger.new(nil)
 			end
 			
 			attr :updated
 			
 			# Notify the monitor that files in these directories have changed.
 			def update(directories, *args)
+				@logger.debug("Update: #{directories} #{args.inspect}")
 				delay_deletions do
 					directories.each do |directory|
-						# directory = File.realpath(directory)
-						
 						@directories[directory].each do |handle|
+							@logger.debug{"Handle changed: #{handle}"}
+							
 							handle.changed!(*args)
 						end
 					end
@@ -80,6 +84,7 @@ module Build
 			
 			def delete(handle)
 				if @deletions
+					@logger.debug{"Delayed delete handle: #{handle}"}
 					@deletions << handle
 				else
 					purge(handle)
@@ -93,6 +98,8 @@ module Build
 			end
 			
 			def add(handle)
+				@logger.debug{"Adding handle: #{handle}"}
+				
 				handle.directories.each do |directory|
 					@directories[directory] << handle
 					
@@ -134,6 +141,8 @@ module Build
 			end
 			
 			def purge(handle)
+				@logger.debug{"Purge handle: #{handle}"}
+				
 				handle.directories.each do |directory|
 					@directories[directory].delete(handle)
 					
