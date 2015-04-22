@@ -113,7 +113,7 @@ module Build
 					else; :polling
 				end
 				
-				if driver = options.fetch(:driver, default_driver)
+				if driver = (options[:driver] || default_driver)
 					method_name = "run_with_#{driver}"
 					Files.send(method_name, self, options, &block)
 				end

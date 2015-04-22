@@ -31,48 +31,70 @@ module Build::Files::MonitorSpec
 	ROOT = File.expand_path('../tmp', __FILE__)
 	
 	describe Build::Files::Monitor do
-		let(:path) {Path.new(ROOT) + "test.txt"}
-		
-		before(:all) do
-			Path.new(ROOT).mkpath
+		shared_examples_for Monitor do |driver|
+			let(:path) {Path.new(ROOT) + "test.txt"}
+			
+			before(:all) do
+				Path.new(ROOT).create
+			end
+			
+			after(:all) do
+				Path.new(ROOT).delete
+			end
+			
+			it 'should detect additions' do
+				directory = Build::Files::Directory.new(ROOT)
+				monitor = Build::Files::Monitor.new
+				
+				changed = false
+				
+				monitor.track_changes(directory) do |state|
+					changed = state.added.include? path
+				end
+				
+				touched = false
+				
+				thread = Thread.new do
+					sleep 0.1
+					
+					path.touch
+					
+					touched = true
+				end
+				
+				triggered = 0
+				
+				monitor.run(driver: driver) do
+					triggered += 1
+					
+					throw :interrupt if touched
+				end
+				
+				thread.join
+				
+				expect(changed).to be true
+				expect(triggered).to be >= 1
+			end
 		end
 		
-		after(:all) do
-			Path.new(ROOT).rmpath
-		end
+		# Use the cross-platform driver, :polling
+		it_behaves_like Monitor, :polling
 		
-		it 'should detect additions' do
+		# Use the native platform driver, e.g. fsevent or inotify.
+		it_behaves_like Monitor
+		
+		it "should add and remove monitored paths" do
 			directory = Build::Files::Directory.new(ROOT)
 			monitor = Build::Files::Monitor.new
 			
-			changed = false
-			
-			monitor.track_changes(directory) do |state|
-				changed = state.added.include? path
+			handler = monitor.track_changes(directory) do |state|
 			end
 			
-			touched = false
+			expect(monitor.roots).to be_include ROOT
 			
-			thread = Thread.new do
-				sleep 0.1
-				
-				path.touch
-				
-				touched = true
-			end
+			handler.remove!
 			
-			triggered = 0
-			
-			monitor.run do
-				triggered += 1
-				
-				throw :interrupt if touched
-			end
-			
-			thread.join
-			
-			expect(changed).to be true
-			expect(triggered).to be >= 1
+			expect(monitor.roots).to be_empty
 		end
 	end
 end

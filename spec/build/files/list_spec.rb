@@ -28,6 +28,50 @@ module Build::Files::ListSpec
 	describe Build::Files::Paths do
 		let(:path) {Path.new("/foo/bar/baz", "/foo")}
 		
+		it "should be inspectable" do
+			paths = Paths.new(path)
+			
+			expect(paths.inspect).to be_include path.inspect
+		end
+		
+		it "should be possible to convert to paths" do
+			paths = Paths.new(path)
+			
+			expect(paths.to_paths).to be paths
+		end
+		
+		it "should be count number of paths" do
+			paths = Paths.new(path)
+			
+			expect(paths.count).to be == 1
+		end
+		
+		it "should coerce array to paths" do
+			paths = Paths.coerce([path])
+			
+			expect(paths).to be_kind_of Paths
+			expect(paths.count).to be == 1
+			expect(paths).to be_include path
+			
+			same_paths = Paths.coerce(paths)
+			expect(same_paths).to be paths
+		end
+		
+		it "can add two lists of paths together" do
+			paths_a = Paths.new(path)
+			paths_b = Paths.new(Path.join('/foo/bar', 'alice'))
+			
+			paths = paths_a + paths_b
+			
+			expect(paths.count).to be 2
+			expect(paths).to be_include path
+			expect(paths).to be_kind_of Composite
+			
+			# Composite equality
+			expect(paths).to be_eql paths
+			expect(paths).to_not be_eql paths_a
+		end
+		
 		it "maps paths with a new extension" do
 			paths = Paths.new([
 				Path.join('/foo/bar', 'alice'),
