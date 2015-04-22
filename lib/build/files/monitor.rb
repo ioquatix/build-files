@@ -66,11 +66,14 @@ module Build
 			
 			# Notify the monitor that files in these directories have changed.
 			def update(directories, *args)
-				@logger.debug("Update: #{directories} #{args.inspect}")
+				@logger.debug{"Update: #{directories} #{args.inspect}"}
+				
 				delay_deletions do
 					directories.each do |directory|
+						@logger.debug{"Directory: #{directory}"}
+						
 						@directories[directory].each do |handle|
-							@logger.debug{"Handle changed: #{handle}"}
+							@logger.debug{"Handle changed: #{handle.inspect}"}
 							
 							handle.changed!(*args)
 						end
