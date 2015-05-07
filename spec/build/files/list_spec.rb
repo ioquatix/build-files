@@ -166,7 +166,14 @@ module Build::Files::ListSpec
 			
 			cache[Paths.new(path)] = true
 			
-			expect(cache).to include(Paths.new(path))
+			expect(cache).to be_include(Paths.new(path))
+		end
+		
+		it "can be constructed from a list of relative paths" do
+			paths = Paths.directory('/foo', ['bar', 'baz', 'bob'])
+			
+			expect(paths.count).to be 3
+			expect(paths).to be_include Path.new('/foo/bar')
 		end
 	end
 end

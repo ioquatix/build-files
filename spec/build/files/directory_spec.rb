@@ -60,5 +60,11 @@ module Build::Files::DirectorySpec
 			expect(directory).to be_eql directory
 			expect(directory).to_not be_eql other_directory
 		end
+		
+		it "can be rebased" do
+			rebased_directory = directory.rebase("/fu")
+			
+			expect(rebased_directory.root).to be == '/fu/bar/baz'
+		end
 	end
 end

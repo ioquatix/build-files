@@ -64,5 +64,13 @@ module Build::Files::StateSpec
 			expect(Build::Files::State.dirty?(empty, something)).to be false
 			expect(Build::Files::State.dirty?(something, empty)).to be false
 		end
+		
+		it "should be dirty if files are modified" do
+			empty = Build::Files::State.new(Build::Files::Paths::NONE)
+			something = Build::Files::State.new(files)
+			
+			# In this case, the file mtime is usually different so... 
+			expect(Build::Files::State.dirty?(something, something)).to be true
+		end
 	end
 end

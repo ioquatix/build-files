@@ -31,5 +31,13 @@ module Build::Files::GlobSpec
 			
 			expect(paths.count).to be >= 1
 		end
+		
+		it "can be used as key in hash" do
+			cache = {}
+			
+			cache[path.glob("*.rb")] = true
+			
+			expect(cache).to be_include(path.glob("*.rb"))
+		end
 	end
 end
