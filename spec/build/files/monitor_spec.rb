@@ -22,7 +22,7 @@
 
 require 'build/files/monitor'
 require 'build/files/path'
-require 'build/files/path/filesystem'
+require 'build/files/system'
 require 'build/files/directory'
 
 module Build::Files::MonitorSpec

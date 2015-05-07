@@ -46,11 +46,11 @@ module Build
 					yield Path.new(path, @root)
 				end
 			end
-		
+			
 			def eql?(other)
 				self.class.eql?(other.class) and @root.eql?(other.root)
 			end
-		
+			
 			def hash
 				@root.hash
 			end

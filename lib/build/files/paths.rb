@@ -18,56 +18,56 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-require 'fileutils'
+require_relative 'list'
 
 module Build
 	module Files
-		class Path
-			def open(mode, &block)
-				File.open(self, mode, &block)
+		class Paths < List
+			def initialize(list, roots = nil)
+				@list = Array(list).freeze
+				@roots = roots
 			end
 			
-			def read(mode = File::RDONLY)
-				open(mode) do |file|
-					file.read
+			attr :list
+			
+			# The list of roots for a given list of immutable files is also immutable, so we cache it for performance:
+			def roots
+				@roots ||= super
+			end
+			
+			def count
+				@list.count
+			end
+			
+			def each
+				return to_enum(:each) unless block_given?
+				
+				@list.each{|path| yield path}
+			end
+			
+			def eql?(other)
+				self.class.eql?(other.class) and @list.eql?(other.list)
+			end
+		
+			def hash
+				@list.hash
+			end
+			
+			def to_paths
+				self
+			end
+			
+			def inspect
+				"<Paths #{@list.inspect}>"
+			end
+			
+			def self.directory(root, relative_paths)
+				paths = relative_paths.collect do |path|
+					Path.join(root, path)
 				end
+				
+				self.new(paths, [root])
 			end
-			
-			def write(buffer, mode = File::CREAT|File::TRUNC|File::WRONLY)
-				open(mode) do |file|
-					file.write(buffer)
-				end
-			end
-			
-			def touch
-				FileUtils.touch self
-			end
-			
-			def exist?
-				File.exist? self
-			end
-			
-			def directory?
-				File.directory? self
-			end
-			
-			def modified_time
-				File.mtime self
-			end
-			
-			alias mtime modified_time
-			
-			def create
-				FileUtils.mkpath self
-			end
-			
-			alias mkpath create
-			
-			def delete
-				FileUtils.rm_rf self
-			end
-			
-			alias rmpath delete
 		end
 	end
 end

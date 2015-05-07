@@ -24,16 +24,41 @@ module Build::Files::DirectorySpec
 	include Build::Files
 	
 	describe Build::Files::Directory do
-		let(:path) {Path.new("/foo/bar/baz", "/bob")}
+		let(:path) {Path.new("/foo/bar/baz", "/foo")}
 		let(:directory) {Directory.new(path)}
+		
+		it "can be constructed using join" do
+			joined_directory = Directory.join('/foo', 'bar/baz')
+			
+			expect(joined_directory).to be == directory
+		end
 		
 		it "has a root and path component" do
 			expect(directory.root).to be == path
+			expect(directory.to_path).to be == path
+			
 			expect(directory.roots).to be_include(path)
+		end
+		
+		it "can be converted into a string" do
+			expect(directory.to_str).to be == path.to_str
+		end
+		
+		it "can be used as a key" do
+			hash = {directory => true}
+			
+			expect(hash).to be_include directory
 		end
 		
 		it "includes subpaths" do
 			expect(directory).to be_include "/foo/bar/baz/bob/dole"
+		end
+		
+		it "can be compared" do
+			other_directory = Directory.new(path + 'dole')
+			
+			expect(directory).to be_eql directory
+			expect(directory).to_not be_eql other_directory
 		end
 	end
 end

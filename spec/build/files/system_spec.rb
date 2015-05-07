@@ -20,7 +20,7 @@
 
 require 'build/files'
 require 'build/files/path'
-require 'build/files/path/filesystem'
+require 'build/files/system'
 
 require 'pathname'
 
