@@ -56,21 +56,35 @@ module Build::Files::StateSpec
 			expect(state.removed).to be == []
 			expect(state.missing).to be == []
 		end
+	end
+	
+	describe Build::Files::State do
+		before(:each) do
+			@temporary_files = Build::Files::Paths.directory(__dir__, ['a'])
+			@temporary_files.touch
+			
+			@new_files = Build::Files::State.new(@temporary_files)
+			@old_files = Build::Files::State.new(Build::Files::Glob.new(__dir__, "*.rb"))
+		end
+		
+		after(:each) do
+			@temporary_files.delete
+		end
+		
+		let(:empty) {Build::Files::State.new(Build::Files::Paths::NONE)}
 		
 		it "should be clean with empty inputs or outputs" do
-			empty = Build::Files::State.new(Build::Files::Paths::NONE)
-			something = Build::Files::State.new(files)
-			
-			expect(Build::Files::State.dirty?(empty, something)).to be false
-			expect(Build::Files::State.dirty?(something, empty)).to be false
+			expect(Build::Files::State.dirty?(empty, @new_files)).to be false
+			expect(Build::Files::State.dirty?(@new_files, empty)).to be false
+		end
+		
+		it "should be clean if files are newer" do
+			expect(Build::Files::State.dirty?(@old_files, @new_files)).to be false
 		end
 		
 		it "should be dirty if files are modified" do
-			empty = Build::Files::State.new(Build::Files::Paths::NONE)
-			something = Build::Files::State.new(files)
-			
 			# In this case, the file mtime is usually different so... 
-			expect(Build::Files::State.dirty?(something, something)).to be true
+			expect(Build::Files::State.dirty?(@new_files, @old_files)).to be true
 		end
 	end
 end
