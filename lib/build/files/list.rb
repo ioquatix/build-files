@@ -39,8 +39,10 @@ module Build
 			def ==(other)
 				if self.class == other.class
 					self.eql?(other)
-				else
+				elsif other.kind_of? self.class
 					self.to_a.sort == other.to_a.sort
+				else
+					super
 				end
 			end
 			
