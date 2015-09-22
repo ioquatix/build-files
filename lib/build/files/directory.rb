@@ -64,6 +64,7 @@ module Build
 				self.class.new(@root.rebase(root))
 			end
 			
+			# Convert a Directory into a String, can be used as an argument to a command.
 			def to_str
 				@root.to_str
 			end

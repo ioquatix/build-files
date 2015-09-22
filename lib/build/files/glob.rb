@@ -73,7 +73,6 @@ module Build
 			def inspect
 				"<Glob #{full_pattern.inspect}>"
 			end
-			
 		end
 	end
 end

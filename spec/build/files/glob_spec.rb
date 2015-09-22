@@ -39,5 +39,11 @@ module Build::Files::GlobSpec
 			
 			expect(cache).to be_include(path.glob("*.rb"))
 		end
+		
+		it "should print nice string represenation" do
+			glob = Build::Files::Glob.new(".", "*.rb")
+			
+			expect("#{glob}").to be == '<Glob "."/"*.rb">'
+		end
 	end
 end

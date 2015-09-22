@@ -86,6 +86,10 @@ module Build
 					Paths.new(arg)
 				end
 			end
+			
+			def to_s
+				inspect
+			end
 		end
 		
 		class Composite < List
