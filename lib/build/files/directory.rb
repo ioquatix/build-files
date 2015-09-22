@@ -69,6 +69,10 @@ module Build
 				@root.to_str
 			end
 			
+			def to_s
+				to_str
+			end
+			
 			def to_path
 				@root
 			end
