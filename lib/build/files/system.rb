@@ -66,14 +66,18 @@ module Build
 			end
 			
 			# Recursively create a directory hierarchy for the given path.
-			def create
+			def mkpath
 				FileUtils.mkpath self
 			end
 			
+			alias create mkpath
+			
 			# Recursively delete the given path and all contents.
-			def delete
+			def rm
 				FileUtils.rm_rf self
 			end
+			
+			alias delete rm
 		end
 		
 		class List
