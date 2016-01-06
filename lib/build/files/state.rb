@@ -126,8 +126,6 @@ module Build
 			attr :oldest_time
 			attr :newest_time
 			
-			attr :missing
-			
 			def missing?
 				!@missing.empty?
 			end

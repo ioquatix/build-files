@@ -92,9 +92,6 @@ module Build::Files::PathSpec
 		end
 		
 		it "should give the shortest path for outer paths" do
-			spec_path = Path.new(__FILE__)
-			source_path = Path.new(File.expand_path("../../../lib/build/files/list.rb"))
-			
 			input = Path.new("/a/b/c/file.cpp")
 			output = Path.new("/a/b/c/d/e/")
 			
