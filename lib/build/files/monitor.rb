@@ -116,16 +116,20 @@ module Build
 				handle
 			end
 			
-			def run(options = {}, &block)
-				default_driver = case RUBY_PLATFORM
-					when /linux/i; :inotify
-					when /darwin/i; :fsevent
-					else; :polling
+			def default_driver
+				case RUBY_PLATFORM
+				when /linux/i then :inotify
+				when /darwin/i then :fsevent
+				else :polling
 				end
-				
+			end
+			
+			def run(options = {}, &block)
 				if driver = (options[:driver] || default_driver)
 					method_name = "run_with_#{driver}"
 					Files.send(method_name, self, options, &block)
+				else
+					raise ArgumentError.new("Could not find driver for platform #{RUBY_PLATFORM}!")
 				end
 			end
 			
