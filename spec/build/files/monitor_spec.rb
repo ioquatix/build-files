@@ -54,15 +54,16 @@ module Build::Files::MonitorSpec
 				
 				touched = false
 				
-				thread = Thread.new do
-					sleep 0.1
-					
-					path.touch
-					
-					touched = true
-				end
-				
 				triggered = 0
+				
+				thread = Thread.new do
+					while triggered == 0
+						sleep 0.1 if touched
+						
+						path.touch
+						touched = true
+					end
+				end
 				
 				monitor.run(driver: driver) do
 					triggered += 1
