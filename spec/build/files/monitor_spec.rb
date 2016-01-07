@@ -53,11 +53,10 @@ module Build::Files::MonitorSpec
 				end
 				
 				touched = false
-				
 				triggered = 0
 				
 				thread = Thread.new do
-					while triggered == 0
+					while triggered == 0 or touched == false
 						sleep 0.1 if touched
 						
 						path.touch
