@@ -150,9 +150,12 @@ module Build::Files::ListSpec
 			glob = Glob.new(__dir__, "*.rb")
 			
 			paths = glob.with extension: ".txt"
+			path = paths.first
 			
-			expect(paths.first[0]).to be == (glob.first)
-			expect(paths.first[1]).to be == (glob.first.append ".txt")
+			expect(path).to be_kind_of Array
+			
+			expect(path[0]).to be == glob.first
+			expect(path[1]).to be == glob.first.append(".txt")
 		end
 		
 		it "should define an empty set of files" do
