@@ -45,9 +45,13 @@ module Build
 			def remove!
 				monitor.delete(self)
 			end
-		
+			
+			# Inform the handle that it might have been modified.
 			def changed!
-				@on_changed.call(@state) if @state.update!
+				# If @state.update! did not find any changes, don't invoke the callback:
+				if @state.update!
+					@on_changed.call(@state)
+				end
 			end
 		end
 		
@@ -75,6 +79,7 @@ module Build
 						@directories[directory].each do |handle|
 							@logger.debug{"Handle changed: #{handle.inspect}"}
 							
+							# Changes here may not actually require an update to the handle:
 							handle.changed!(*args)
 						end
 					end
