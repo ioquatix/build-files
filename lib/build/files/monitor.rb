@@ -171,7 +171,7 @@ module Build
 			catch(:interrupt) do
 				while true
 					monitor.roots.each do |root|
-						notifier.watch root, :create, :modify, :delete do |event|
+						notifier.watch root, :create, :modify, :attrib, :delete do |event|
 							monitor.update([root])
 							
 							yield
