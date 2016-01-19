@@ -80,14 +80,6 @@ module Build
 				# @root = @root.to_s
 			end
 			
-			def components
-				@components ||= @full_path.split(File::SEPARATOR)
-			end
-			
-			def basename
-				self.components.last
-			end
-			
 			attr :root
 			attr :full_path
 			
@@ -95,9 +87,15 @@ module Build
 				@full_path.length
 			end
 			
-			def parts
-				@parts ||= @full_path.split(File::SEPARATOR)
+			def components
+				@components ||= @full_path.split(File::SEPARATOR).freeze
 			end
+			
+			def basename
+				self.parts.last
+			end
+			
+			alias parts components
 			
 			def relative_path
 				@relative_path ||= Path.relative_path(@root.to_s, @full_path)
