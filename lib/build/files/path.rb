@@ -36,7 +36,7 @@ module Build
 				end
 			end
 			
-			# Return the shortest relative path to get to path from root:
+			# Return the shortest relative path to get to path from root. Root should be a directory with which you are computing the relative path.
 			def self.shortest_path(path, root)
 				path_components = Path.components(path)
 				root_components = Path.components(root)
