@@ -98,7 +98,7 @@ module Build
 			alias parts components
 			
 			def relative_path
-				@relative_path ||= Path.relative_path(@root.to_s, @full_path)
+				@relative_path ||= Path.relative_path(@root.to_s, @full_path).freeze
 			end
 			
 			def relative_parts
