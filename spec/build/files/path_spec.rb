@@ -27,65 +27,79 @@ module Build::Files::PathSpec
 	include Build::Files
 	
 	describe Build::Files::Path do
-		let(:path) {Path.new("/foo/bar/baz", "/foo")}
+		it "should expand the path" do
+			expect(Build::Files::Path.expand("foo", "/bar")).to be == "/bar/foo"
+		end
+	end
+	
+	describe Build::Files::Path.new("/test") do
+		it "should start_with? full path" do
+			expect(subject).to be_start_with '/test'
+		end
 		
+		it "should start_with? partial pattern" do
+			expect(subject).to be_start_with '/te'
+		end
+	end
+	
+	describe Build::Files::Path.new("/foo/bar/baz", "/foo") do
 		it "should be inspectable" do
-			expect(path.inspect).to be_include path.root.to_s
-			expect(path.inspect).to be_include path.relative_path.to_s
+			expect(subject.inspect).to be_include subject.root.to_s
+			expect(subject.inspect).to be_include subject.relative_path.to_s
 		end
 		
 		it "should convert to path" do
 			pathname = Pathname("/foo/bar/baz")
 			
-			expect(Path[pathname]).to be == path
-			expect(Path["/foo/bar/baz"]).to be == path
+			expect(Path[pathname]).to be == subject
+			expect(Path["/foo/bar/baz"]).to be == subject
 		end
 		
 		it "should be equal" do
-			expect(path).to be_eql path
-			expect(path).to be == path
+			expect(subject).to be_eql subject
+			expect(subject).to be == subject
 			
 			different_root_path = Path.join("/foo/bar", "baz")
-			expect(path).to_not be_eql different_root_path
-			expect(path).to be == different_root_path
+			expect(subject).to_not be_eql different_root_path
+			expect(subject).to be == different_root_path
 		end
 		
 		it "should convert to string" do
-			expect(path.to_s).to be == "/foo/bar/baz"
+			expect(subject.to_s).to be == "/foo/bar/baz"
 			
 			# The to_str method should return the full path (i.e. the same as to_s):
-			expect(path.to_s).to be == path.to_str
+			expect(subject.to_s).to be == subject.to_str
 			
 			# Check the equality operator:
-			expect(path).to be == path.dup
+			expect(subject).to be == subject.dup
 			
 			# The length should be reported correctly:
-			expect(path.length).to be == path.to_s.length
+			expect(subject.length).to be == subject.to_s.length
 			
 			# Check the return types:
-			expect(path).to be_kind_of Path
-			expect(path.root).to be_kind_of String
-			expect(path.relative_path).to be_kind_of String
+			expect(subject).to be_kind_of Path
+			expect(subject.root).to be_kind_of String
+			expect(subject.relative_path).to be_kind_of String
 		end
 		
 		it "should consist of parts" do
-			expect(path.parts).to be == ["", "foo", "bar", "baz"]
+			expect(subject.parts).to be == ["", "foo", "bar", "baz"]
 			
-			expect(path.root).to be == "/foo"
+			expect(subject.root).to be == "/foo"
 			
-			expect(path.relative_path).to be == "bar/baz"
+			expect(subject.relative_path).to be == "bar/baz"
 			
-			expect(path.relative_parts).to be == ["bar", "baz"]
+			expect(subject.relative_parts).to be == ["bar", "baz"]
 		end
 		
 		it "should have a new extension" do
-			renamed_path = path.with(root: '/tmp', extension: '.txt')
+			renamed_path = subject.with(root: '/tmp', extension: '.txt')
 			
 			expect(renamed_path.root).to be == '/tmp'
 			
 			expect(renamed_path.relative_path).to be == 'bar/baz.txt'
 			
-			object_path = path.append(".o")
+			object_path = subject.append(".o")
 		
 			expect(object_path.root).to be == "/foo"
 			expect(object_path.relative_path).to be == "bar/baz.o"
@@ -120,37 +134,37 @@ module Build::Files::PathSpec
 		end
 		
 		it "should append a path" do
-			path = Path.new("/a/b/c")
+			subject = Path.new("/a/b/c")
 			
-			expect(path + "d/e/f").to be == "/a/b/c/d/e/f"
+			expect(subject + "d/e/f").to be == "/a/b/c/d/e/f"
 		end
 		
 		it "should give a list of components" do
-			expect(Path.components(path)).to be == ["", "foo", "bar", "baz"]
-			expect(Path.components(path.to_s)).to be == ["", "foo", "bar", "baz"]
+			expect(Path.components(subject)).to be == ["", "foo", "bar", "baz"]
+			expect(Path.components(subject.to_s)).to be == ["", "foo", "bar", "baz"]
 		end
 		
 		it "should give a basename" do
-			expect(path.basename).to be == "baz"
+			expect(subject.basename).to be == "baz"
 		end
 		
 		it "should have a new root" do
-			rerooted_path = path / "cat"
+			rerooted_path = subject / "cat"
 			
 			expect(rerooted_path.root).to be == "/foo/bar/baz"
 			expect(rerooted_path.relative_path).to be == "cat"
 		end
 		
 		it "should give correct modes for reading" do
-			expect(path.for_reading).to be == [path.to_s, File::RDONLY]
+			expect(subject.for_reading).to be == [subject.to_s, File::RDONLY]
 		end
 		
 		it "should give correct modes for writing" do
-			expect(path.for_writing).to be == [path.to_s, File::CREAT|File::TRUNC|File::WRONLY]
+			expect(subject.for_writing).to be == [subject.to_s, File::CREAT|File::TRUNC|File::WRONLY]
 		end
 		
 		it "should give correct modes for appending" do
-			expect(path.for_appending).to be == [path.to_s, File::CREAT|File::APPEND|File::WRONLY]
+			expect(subject.for_appending).to be == [subject.to_s, File::CREAT|File::APPEND|File::WRONLY]
 		end
 	end
 end

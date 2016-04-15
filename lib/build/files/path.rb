@@ -95,6 +95,10 @@ module Build
 				self.parts.last
 			end
 			
+			def start_with?(*args)
+				@full_path.start_with?(*args)
+			end
+			
 			alias parts components
 			
 			def relative_path
@@ -133,6 +137,15 @@ module Build
 			
 			def self.join(root, relative_path)
 				self.new(File.join(root, relative_path), root)
+			end
+			
+			# Expand a subpath within a given root, similar to `File.expand_path`
+			def self.expand(subpath, root = Dir.getwd)
+				if subpath.start_with? File::SEPARATOR
+					self.new(subpath)
+				else
+					self.join(root, subpath)
+				end
 			end
 			
 			def shortest_path(root)
