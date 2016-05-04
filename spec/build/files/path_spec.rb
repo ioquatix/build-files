@@ -42,6 +42,20 @@ module Build::Files::PathSpec
 		end
 	end
 	
+	describe Build::Files::Path.new("/foo/bar.txt") do
+		it "should replace existing file extension" do
+			expect(subject.with(extension: '.jpeg', basename: true)).to be == "/foo/bar.jpeg"
+		end
+		
+		it "should append file extension" do
+			expect(subject.with(extension: '.jpeg')).to be == "/foo/bar.txt.jpeg"
+		end
+		
+		it "should change basename" do
+			expect(subject.with(basename: 'baz', extension: '.txt')).to be == "/foo/baz.txt"
+		end
+	end
+	
 	describe Build::Files::Path.new("/foo/bar/baz", "/foo") do
 		it "should be inspectable" do
 			expect(subject.inspect).to be_include subject.root.to_s

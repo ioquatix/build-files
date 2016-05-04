@@ -22,6 +22,14 @@ module Build
 	module Files
 		# Represents a file path with an absolute root and a relative offset:
 		class Path
+			def self.split(path)
+				# Effectively dirname and basename:
+				dirname, separator, filename = path.rpartition(File::SEPARATOR)
+				filename, dot, extension = filename.rpartition('.')
+				
+				return dirname + separator, filename, dot + extension
+			end
+			
 			# Returns the length of the prefix which is shared by two strings.
 			def self.prefix_length(a, b)
 				[a.size, b.size].min.times{|i| return i if a[i] != b[i]}
@@ -128,9 +136,21 @@ module Build
 				self.class.new(File.join(root, relative_path), root)
 			end
 			
-			def with(root: @root, extension: nil)
-				# self.relative_path should be a string so using + to add an extension should be fine.
-				relative_path = extension ? self.relative_path + extension : self.relative_path
+			def with(root: @root, extension: nil, basename: false)
+				relative_path = self.relative_path
+				
+				if basename
+					dirname, filename, _ = self.class.split(relative_path)
+					
+					# Replace the filename if the basename is supplied:
+					filename = basename if basename.is_a? String
+					
+					relative_path = dirname + filename
+				end
+				
+				if extension
+					relative_path = relative_path + extension
+				end
 				
 				self.class.new(File.join(root, relative_path), root, relative_path)
 			end
