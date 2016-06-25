@@ -50,6 +50,10 @@ module Build
 				FileUtils.touch self
 			end
 			
+			def stat
+				File.stat self
+			end
+			
 			# Checks if the file exists in the local file system.
 			def exist?
 				File.exist? self
@@ -58,6 +62,18 @@ module Build
 			# Checks if the path refers to a directory.
 			def directory?
 				File.directory? self
+			end
+			
+			def file?
+				File.file? self
+			end
+			
+			def symlink?
+				File.symlink? self
+			end
+			
+			def readable?
+				File.readable? self
 			end
 			
 			# The time the file was last modified.
