@@ -200,6 +200,13 @@ module Build
 				self.to_s == other.to_s
 			end
 			
+			# Match a path with a given pattern, using `File#fnmatch`.
+			def match(pattern, flags = 0)
+				path = pattern.start_with?('/') ? full_path : relative_path
+				
+				return File.fnmatch(pattern, path, flags)
+			end
+			
 			def for_reading
 				[@full_path, File::RDONLY]
 			end

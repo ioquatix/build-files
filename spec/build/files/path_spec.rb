@@ -180,5 +180,16 @@ module Build::Files::PathSpec
 		it "should give correct modes for appending" do
 			expect(subject.for_appending).to be == [subject.to_s, File::CREAT|File::APPEND|File::WRONLY]
 		end
+		
+		it "should match against relative path" do
+			expect(subject.match(subject.relative_path)).to be_truthy
+			expect(subject.match("*/baz")).to be_truthy
+			expect(subject.match("/baz")).to be_falsey
+		end
+		
+		it "should match against absolute path" do
+			expect(subject.match(subject.to_s)).to be_truthy
+			expect(subject.match("/foo/**")).to be_truthy
+		end
 	end
 end
