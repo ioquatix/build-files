@@ -66,5 +66,15 @@ module Build::Files::DirectorySpec
 			
 			expect(rebased_directory.root).to be == '/fu/bar/baz'
 		end
+		
+		context Directory.join(__dir__, "directory_spec") do
+			it "can list dot files" do
+				expect(subject).to include(subject.root + '.dot_file.yaml')
+			end
+			
+			it "can list normal files" do
+				expect(subject).to include(subject.root + 'normal_file.txt')
+			end
+		end
 	end
 end

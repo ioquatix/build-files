@@ -42,7 +42,8 @@ module Build
 			def each
 				return to_enum(:each) unless block_given?
 				
-				Dir.glob(@root + "**/*") do |path|
+				# We match both normal files with * and dotfiles with .?*
+				Dir.glob(@root + "**/{*,.?*}") do |path|
 					yield Path.new(path, @root)
 				end
 			end
