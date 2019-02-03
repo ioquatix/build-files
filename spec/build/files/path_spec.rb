@@ -82,6 +82,14 @@ RSpec.describe Build::Files::Path.new("/foo/bar.txt") do
 end
 
 RSpec.describe Build::Files::Path.new("/foo/bar/baz", "/foo") do
+	it "can add nil path" do
+		expect(subject + nil).to be == subject
+	end
+	
+	it "can add nil root" do
+		expect(subject / nil).to be == subject
+	end
+	
 	it "should be inspectable" do
 		expect(subject.inspect).to be_include subject.root.to_s
 		expect(subject.inspect).to be_include subject.relative_path.to_s
