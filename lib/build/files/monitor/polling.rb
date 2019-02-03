@@ -23,8 +23,6 @@ require 'logger'
 
 require_relative '../handle'
 
-require 'pry'
-
 module Build
 	module Files
 		module Monitor
