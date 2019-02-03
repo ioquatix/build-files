@@ -23,173 +23,169 @@ require 'build/files/path'
 
 require 'pathname'
 
-module Build::Files::PathSpec
-	include Build::Files
-	
-	describe Build::Files::Path do
-		it "should expand the path" do
-			expect(Build::Files::Path.expand("foo", "/bar")).to be == "/bar/foo"
-		end
+RSpec.describe Build::Files::Path do
+	it "should expand the path" do
+		expect(Build::Files::Path.expand("foo", "/bar")).to be == "/bar/foo"
 	end
 	
-	describe Build::Files::Path.new("/test") do
-		it "should start_with? full path" do
-			expect(subject).to be_start_with '/test'
-		end
+	it "should give the shortest path for outer paths" do
+		input = Build::Files::Path.new("/a/b/c/file.cpp")
+		output = Build::Files::Path.new("/a/b/c/d/e/")
 		
-		it "should start_with? partial pattern" do
-			expect(subject).to be_start_with '/te'
-		end
+		expect(input.root).to be == "/a/b/c"
+		expect(output.root).to be == "/a/b/c/d/e"
+		
+		short = input.shortest_path(output)
+		
+		expect(short).to be == "../../file.cpp"
+		
+		expect(File.expand_path(short, output)).to be == input
 	end
 	
-	describe Build::Files::Path.new("/foo/bar.txt") do
-		it "should replace existing file extension" do
-			expect(subject.with(extension: '.jpeg', basename: true)).to be == "/foo/bar.jpeg"
-		end
+	it "should give the shortest path for inner paths" do
+		input = Build::Files::Path.new("/a/b/c/file.cpp")
+		output = Build::Files::Path.new("/a/")
 		
-		it "should append file extension" do
-			expect(subject.with(extension: '.jpeg')).to be == "/foo/bar.txt.jpeg"
-		end
+		expect(input.root).to be == "/a/b/c"
+		expect(output.root).to be == "/a"
 		
-		it "should change basename" do
-			expect(subject.with(basename: 'baz', extension: '.txt')).to be == "/foo/baz.txt"
-		end
+		short = input.shortest_path(output)
+		
+		expect(short).to be == "b/c/file.cpp"
+		
+		expect(File.expand_path(short, output)).to be == input
+	end
+end
+
+RSpec.describe Build::Files::Path.new("/test") do
+	it "should start_with? full path" do
+		expect(subject).to be_start_with '/test'
 	end
 	
-	describe Build::Files::Path.new("/foo/bar/baz", "/foo") do
-		it "should be inspectable" do
-			expect(subject.inspect).to be_include subject.root.to_s
-			expect(subject.inspect).to be_include subject.relative_path.to_s
-		end
+	it "should start_with? partial pattern" do
+		expect(subject).to be_start_with '/te'
+	end
+end
+
+RSpec.describe Build::Files::Path.new("/foo/bar.txt") do
+	it "should replace existing file extension" do
+		expect(subject.with(extension: '.jpeg', basename: true)).to be == "/foo/bar.jpeg"
+	end
+	
+	it "should append file extension" do
+		expect(subject.with(extension: '.jpeg')).to be == "/foo/bar.txt.jpeg"
+	end
+	
+	it "should change basename" do
+		expect(subject.with(basename: 'baz', extension: '.txt')).to be == "/foo/baz.txt"
+	end
+end
+
+RSpec.describe Build::Files::Path.new("/foo/bar/baz", "/foo") do
+	it "should be inspectable" do
+		expect(subject.inspect).to be_include subject.root.to_s
+		expect(subject.inspect).to be_include subject.relative_path.to_s
+	end
+	
+	it "should convert to path" do
+		pathname = Pathname("/foo/bar/baz")
 		
-		it "should convert to path" do
-			pathname = Pathname("/foo/bar/baz")
-			
-			expect(Path[pathname]).to be == subject
-			expect(Path["/foo/bar/baz"]).to be == subject
-		end
+		expect(Build::Files::Path[pathname]).to be == subject
+		expect(Build::Files::Path["/foo/bar/baz"]).to be == subject
+	end
+	
+	it "should be equal" do
+		expect(subject).to be_eql subject
+		expect(subject).to be == subject
 		
-		it "should be equal" do
-			expect(subject).to be_eql subject
-			expect(subject).to be == subject
-			
-			different_root_path = Path.join("/foo/bar", "baz")
-			expect(subject).to_not be_eql different_root_path
-			expect(subject).to be == different_root_path
-		end
+		different_root_path = Build::Files::Path.join("/foo/bar", "baz")
+		expect(subject).to_not be_eql different_root_path
+		expect(subject).to be == different_root_path
+	end
+	
+	it "should convert to string" do
+		expect(subject.to_s).to be == "/foo/bar/baz"
 		
-		it "should convert to string" do
-			expect(subject.to_s).to be == "/foo/bar/baz"
-			
-			# The to_str method should return the full path (i.e. the same as to_s):
-			expect(subject.to_s).to be == subject.to_str
-			
-			# Check the equality operator:
-			expect(subject).to be == subject.dup
-			
-			# The length should be reported correctly:
-			expect(subject.length).to be == subject.to_s.length
-			
-			# Check the return types:
-			expect(subject).to be_kind_of Path
-			expect(subject.root).to be_kind_of String
-			expect(subject.relative_path).to be_kind_of String
-		end
+		# The to_str method should return the full path (i.e. the same as to_s):
+		expect(subject.to_s).to be == subject.to_str
 		
-		it "should consist of parts" do
-			expect(subject.parts).to be == ["", "foo", "bar", "baz"]
-			
-			expect(subject.root).to be == "/foo"
-			
-			expect(subject.relative_path).to be == "bar/baz"
-			
-			expect(subject.relative_parts).to be == ["bar", "baz"]
-		end
+		# Check the equality operator:
+		expect(subject).to be == subject.dup
 		
-		it "should have a new extension" do
-			renamed_path = subject.with(root: '/tmp', extension: '.txt')
-			
-			expect(renamed_path.root).to be == '/tmp'
-			
-			expect(renamed_path.relative_path).to be == 'bar/baz.txt'
-			
-			object_path = subject.append(".o")
+		# The length should be reported correctly:
+		expect(subject.length).to be == subject.to_s.length
 		
-			expect(object_path.root).to be == "/foo"
-			expect(object_path.relative_path).to be == "bar/baz.o"
-		end
+		# Check the return types:
+		expect(subject).to be_kind_of Build::Files::Path
+		expect(subject.root).to be_kind_of String
+		expect(subject.relative_path).to be_kind_of String
+	end
+	
+	it "should consist of parts" do
+		expect(subject.parts).to be == ["", "foo", "bar", "baz"]
 		
-		it "should give the shortest path for outer paths" do
-			input = Path.new("/a/b/c/file.cpp")
-			output = Path.new("/a/b/c/d/e/")
-			
-			expect(input.root).to be == "/a/b/c"
-			expect(output.root).to be == "/a/b/c/d/e"
-			
-			short = input.shortest_path(output)
-			
-			expect(short).to be == "../../file.cpp"
-			
-			expect(File.expand_path(short, output)).to be == input
-		end
+		expect(subject.root).to be == "/foo"
 		
-		it "should give the shortest path for inner paths" do
-			input = Path.new("/a/b/c/file.cpp")
-			output = Path.new("/a/")
-			
-			expect(input.root).to be == "/a/b/c"
-			expect(output.root).to be == "/a"
-			
-			short = input.shortest_path(output)
-			
-			expect(short).to be == "b/c/file.cpp"
-			
-			expect(File.expand_path(short, output)).to be == input
-		end
+		expect(subject.relative_path).to be == "bar/baz"
 		
-		it "should append a path" do
-			subject = Path.new("/a/b/c")
-			
-			expect(subject + "d/e/f").to be == "/a/b/c/d/e/f"
-		end
+		expect(subject.relative_parts).to be == ["bar", "baz"]
+	end
+	
+	it "should have a new extension" do
+		renamed_path = subject.with(root: '/tmp', extension: '.txt')
 		
-		it "should give a list of components" do
-			expect(Path.components(subject)).to be == ["", "foo", "bar", "baz"]
-			expect(Path.components(subject.to_s)).to be == ["", "foo", "bar", "baz"]
-		end
+		expect(renamed_path.root).to be == '/tmp'
 		
-		it "should give a basename" do
-			expect(subject.basename).to be == "baz"
-		end
+		expect(renamed_path.relative_path).to be == 'bar/baz.txt'
 		
-		it "should have a new root" do
-			rerooted_path = subject / "cat"
-			
-			expect(rerooted_path.root).to be == "/foo/bar/baz"
-			expect(rerooted_path.relative_path).to be == "cat"
-		end
+		object_path = subject.append(".o")
+	
+		expect(object_path.root).to be == "/foo"
+		expect(object_path.relative_path).to be == "bar/baz.o"
+	end
+	
+	it "should append a path" do
+		subject = Build::Files::Path.new("/a/b/c")
 		
-		it "should give correct modes for reading" do
-			expect(subject.for_reading).to be == [subject.to_s, File::RDONLY]
-		end
+		expect(subject + "d/e/f").to be == "/a/b/c/d/e/f"
+	end
+	
+	it "should give a list of components" do
+		expect(Build::Files::Path.components(subject)).to be == ["", "foo", "bar", "baz"]
+		expect(Build::Files::Path.components(subject.to_s)).to be == ["", "foo", "bar", "baz"]
+	end
+	
+	it "should give a basename" do
+		expect(subject.basename).to be == "baz"
+	end
+	
+	it "should have a new root" do
+		rerooted_path = subject / "cat"
 		
-		it "should give correct modes for writing" do
-			expect(subject.for_writing).to be == [subject.to_s, File::CREAT|File::TRUNC|File::WRONLY]
-		end
-		
-		it "should give correct modes for appending" do
-			expect(subject.for_appending).to be == [subject.to_s, File::CREAT|File::APPEND|File::WRONLY]
-		end
-		
-		it "should match against relative path" do
-			expect(subject.match(subject.relative_path)).to be_truthy
-			expect(subject.match("*/baz")).to be_truthy
-			expect(subject.match("/baz")).to be_falsey
-		end
-		
-		it "should match against absolute path" do
-			expect(subject.match(subject.to_s)).to be_truthy
-			expect(subject.match("/foo/**")).to be_truthy
-		end
+		expect(rerooted_path.root).to be == "/foo/bar/baz"
+		expect(rerooted_path.relative_path).to be == "cat"
+	end
+	
+	it "should give correct modes for reading" do
+		expect(subject.for_reading).to be == [subject.to_s, File::RDONLY]
+	end
+	
+	it "should give correct modes for writing" do
+		expect(subject.for_writing).to be == [subject.to_s, File::CREAT|File::TRUNC|File::WRONLY]
+	end
+	
+	it "should give correct modes for appending" do
+		expect(subject.for_appending).to be == [subject.to_s, File::CREAT|File::APPEND|File::WRONLY]
+	end
+	
+	it "should match against relative path" do
+		expect(subject.match(subject.relative_path)).to be_truthy
+		expect(subject.match("*/baz")).to be_truthy
+		expect(subject.match("/baz")).to be_falsey
+	end
+	
+	it "should match against absolute path" do
+		expect(subject.match(subject.to_s)).to be_truthy
+		expect(subject.match("/foo/**")).to be_truthy
 	end
 end
