@@ -18,82 +18,82 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-require_relative 'path'
+require_relative 'list'
 
 module Build
 	module Files
-		# A list of paths, where #each yields instances of Path.
-		class List
-			include Enumerable
+		class Composite < List
+			def initialize(files, roots = nil)
+				@files = []
+				
+				files.each do |list|
+					if list.kind_of? Composite
+						@files += list.files
+					elsif List.kind_of? List
+						@files << list
+					else
+						# Try to convert into a explicit paths list:
+						@files << Paths.new(list)
+					end
+				end
+				
+				@files.freeze
+				@roots = roots
+			end
+			
+			attr :files
+			
+			def freeze
+				self.roots
+				
+				super
+			end
+			
+			def each
+				return to_enum(:each) unless block_given?
+				
+				@files.each do |files|
+					files.each{|path| yield path}
+				end
+			end
 			
 			def roots
-				collect{|path| path.root}.sort.uniq
+				@roots ||= @files.collect(&:roots).flatten.uniq
 			end
 			
-			# Create a composite list out of two other lists:
+			def eql?(other)
+				self.class.eql?(other.class) and @files.eql?(other.files)
+			end
+		
+			def hash
+				@files.hash
+			end
+			
 			def +(list)
-				Composite.new([self, list])
-			end
-			
-			def -(list)
-				Difference.new(self, list)
-			end
-			
-			# This isn't very efficient, but it IS generic.
-			def ==(other)
-				if self.class == other.class
-					self.eql?(other)
-				elsif other.kind_of? self.class
-					self.to_a.sort == other.to_a.sort
+				if list.kind_of? Composite
+					self.class.new(@files + list.files)
 				else
-					super
+					self.class.new(@files + [list])
 				end
 			end
-			
-			# Does this list of files include the path of any other?
-			def intersects? other
-				other.any?{|path| include?(path)}
+		
+			def include?(path)
+				@files.any? {|list| list.include?(path)}
 			end
-			
-			def with(**args)
-				return to_enum(:with, **args) unless block_given?
-				
-				paths = []
-				
-				each do |path|
-					updated_path = path.with(args)
-					
-					yield path, updated_path
-					
-					paths << updated_path
-				end
-				
-				return Paths.new(paths)
-			end
-			
+		
 			def rebase(root)
-				Paths.new(self.collect{|path| path.rebase(root)}, [root])
+				self.class.new(@files.collect{|list| list.rebase(root)}, [root])
 			end
-			
+		
 			def to_paths
-				Paths.new(each.to_a)
+				self.class.new(@files.collect(&:to_paths), roots: @roots)
 			end
 			
-			def map
-				Paths.new(super)
-			end
-			
-			def self.coerce(arg)
-				if arg.kind_of? self
-					arg
-				else
-					Paths.new(arg)
-				end
-			end
-			
-			def to_s
-				inspect
+			def inspect
+				"<Composite #{@files.inspect}>"
 			end
 		end
+		
+		List::NONE = Composite.new([]).freeze
 	end
 end

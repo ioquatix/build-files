@@ -25,76 +25,66 @@ require 'build/files/path'
 require 'build/files/system'
 require 'build/files/directory'
 
-module Build::Files::MonitorSpec
-	include Build::Files
+RSpec.shared_examples_for Monitor do |driver|
+	let(:root) {Build::Files::Path.expand('tmp', __dir__)}
+	let(:path) {root + "test.txt"}
 	
-	ROOT = File.expand_path('../tmp', __FILE__)
+	before do
+		root.delete
+		root.create
+	end
 	
-	describe Build::Files::Monitor do
-		shared_examples_for Monitor do |driver|
-			let(:path) {Path.new(ROOT) + "test.txt"}
+	let(:directory) {Build::Files::Directory.new(root)}
+	let(:monitor) {Build::Files::Monitor.new}
+	
+	it "should include touched path" do
+		path.touch
+		
+		expect(directory.to_a).to include(path)
+	end
+	
+	it 'should detect additions' do
+		changed = false
+		
+		monitor.track_changes(directory) do |state|
+			changed = true
 			
-			before(:all) do
-				Path.new(ROOT).create
-			end
-			
-			after(:all) do
-				Path.new(ROOT).delete
-			end
-			
-			it 'should detect additions' do
-				directory = Build::Files::Directory.new(ROOT)
-				monitor = Build::Files::Monitor.new
-				
-				changed = false
-				
-				monitor.track_changes(directory) do |state|
-					changed = state.added.include? path
-				end
-				
-				touched = false
-				triggered = 0
-				
-				thread = Thread.new do
-					while triggered == 0 or touched == false
-						sleep 0.1 if touched
-						
-						path.touch
-						touched = true
-					end
-				end
-				
-				monitor.run(driver: driver) do
-					triggered += 1
-					
-					throw :interrupt if touched
-				end
-				
-				thread.join
-				
-				expect(changed).to be true
-				expect(triggered).to be >= 1
-			end
+			expect(state.added).to include(path)
 		end
 		
-		# Use the cross-platform driver, :polling
-		it_behaves_like Monitor, :polling
+		thread = Thread.new do
+			sleep 1
+			path.touch
+		end
 		
-		# Use the native platform driver, e.g. fsevent or inotify.
+		monitor.run do
+			throw :interrupt if changed
+		end
+		
+		thread.join
+		
+		expect(changed).to be true
+	end
+	
+	it "should add and remove monitored paths" do
+		handler = monitor.track_changes(directory) do |state|
+			# Do nothing.
+		end
+		
+		expect(monitor.roots).to be_include root
+		
+		handler.remove!
+		
+		expect(monitor.roots).to be_empty
+	end
+end
+
+RSpec.describe Build::Files::Monitor::Polling do
+	it_behaves_like Monitor
+end
+
+if defined? Build::Files::Monitor::Native
+	RSpec.describe Build::Files::Monitor::Native do
 		it_behaves_like Monitor
-		
-		it "should add and remove monitored paths" do
-			directory = Build::Files::Directory.new(ROOT)
-			monitor = Build::Files::Monitor.new
-			
-			handler = monitor.track_changes(directory) do |state|
-			end
-			
-			expect(monitor.roots).to be_include ROOT
-			
-			handler.remove!
-			
-			expect(monitor.roots).to be_empty
-		end
 	end
 end

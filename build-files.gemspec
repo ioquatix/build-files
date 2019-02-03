@@ -1,7 +1,5 @@
-# coding: utf-8
-lib = File.expand_path('../lib', __FILE__)
-$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'build/files/version'
+
+require_relative 'lib/build/files/version'
 
 Gem::Specification.new do |spec|
 	spec.name          = "build-files"
@@ -20,7 +18,8 @@ Gem::Specification.new do |spec|
 	
 	spec.required_ruby_version = '>= 2.0'
 	
-	spec.add_development_dependency "bundler", "~> 1.3"
+	spec.add_development_dependency "covered"
+	spec.add_development_dependency "bundler"
 	spec.add_development_dependency "rspec", "~> 3.4"
 	spec.add_development_dependency "rake"
 end

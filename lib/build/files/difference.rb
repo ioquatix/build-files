@@ -18,25 +18,47 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+require_relative 'list'
+
 module Build
 	module Files
-		module Monitor
-			case RUBY_PLATFORM
-			when /linux/i
-				require_relative 'monitor/inotify'
-				Native = INotify
-				Default = Native
-			when /darwin/i
-				require_relative 'monitor/fsevent'
-				Native = FSEvent
-				Default = Native
-			else 
-				require_relative 'monitor/polling'
-				Default = Polling
+		class Difference < List
+			def initialize(list, excludes)
+				@list = list
+				@excludes = excludes
 			end
-		
-			def self.new(*args)
-				Default.new(*args)
+			
+			attr :files
+			
+			def freeze
+				@list.freeze
+				@excludes.freeze
+				
+				super
+			end
+			
+			def each
+				return to_enum(:each) unless block_given?
+				
+				@list.each do |path|
+					yield path unless @excludes.include?(path)
+				end
+			end
+			
+			def -(list)
+				self.class.new(@list, Composite.new(@excludes, list))
+			end
+			
+			def include?(path)
+				@list.includes?(path) and !@excludes.include?(path)
+			end
+			
+			def rebase(root)
+				self.class.new(@files.collect{|list| list.rebase(root)}, [root])
+			end
+			
+			def inspect
+				"<Difference #{@files.inspect} - #{@excludes.inspect}>"
 			end
 		end
 	end

@@ -18,25 +18,41 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+require_relative 'state'
+
 module Build
 	module Files
-		module Monitor
-			case RUBY_PLATFORM
-			when /linux/i
-				require_relative 'monitor/inotify'
-				Native = INotify
-				Default = Native
-			when /darwin/i
-				require_relative 'monitor/fsevent'
-				Native = FSEvent
-				Default = Native
-			else 
-				require_relative 'monitor/polling'
-				Default = Polling
+		class Handle
+			def initialize(monitor, files, &block)
+				@monitor = monitor
+				@state = State.new(files)
+				@block = block
 			end
 		
-			def self.new(*args)
-				Default.new(*args)
+			attr :monitor
+		
+			def commit!
+				@state.update!
+			end
+		
+			def directories
+				@state.files.roots
+			end
+		
+			def remove!
+				@monitor.delete(self)
+			end
+			
+			# Inform the handle that it might have been modified.
+			def changed!
+				# If @state.update! did not find any changes, don't invoke the callback:
+				if @state.update!
+					@block.call(@state)
+				end
+			end
+			
+			def to_s
+				"\#<#{self.class} @state=#{@state} @block=#{@block}>"
 			end
 		end
 	end

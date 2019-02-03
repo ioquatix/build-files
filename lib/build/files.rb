@@ -19,6 +19,7 @@
 # THE SOFTWARE.
 
 require_relative 'files/list'
+require_relative 'files/composite'
 require_relative 'files/paths'
 require_relative 'files/glob'
 require_relative 'files/directory'

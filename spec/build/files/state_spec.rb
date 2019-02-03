@@ -71,7 +71,7 @@ module Build::Files::StateSpec
 			@temporary_files.delete
 		end
 		
-		let(:empty) {Build::Files::State.new(Build::Files::Paths::NONE)}
+		let(:empty) {Build::Files::State.new(Build::Files::List::NONE)}
 		
 		it "should be clean with empty inputs or outputs" do
 			expect(Build::Files::State.dirty?(empty, @new_files)).to be false

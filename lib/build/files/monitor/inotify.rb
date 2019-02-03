@@ -18,25 +18,35 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+require_relative 'polling'
+
+require 'rb-inotify'
+
 module Build
 	module Files
 		module Monitor
-			case RUBY_PLATFORM
-			when /linux/i
-				require_relative 'monitor/inotify'
-				Native = INotify
-				Default = Native
-			when /darwin/i
-				require_relative 'monitor/fsevent'
-				Native = FSEvent
-				Default = Native
-			else 
-				require_relative 'monitor/polling'
-				Default = Polling
-			end
-		
-			def self.new(*args)
-				Default.new(*args)
+			class INotify < Polling
+				def run(**options, &block)
+					notifier = ::INotify::Notifier.new
+					
+					catch(:interrupt) do
+						while true
+							self.roots.each do |root|
+								notifier.watch root, :create, :modify, :attrib, :delete do |event|
+									self.update([root])
+									
+									yield
+									
+									if self.updated
+										notifier.stop
+									end
+								end
+							end
+							
+							notifier.run
+						end
+					end
+				end
 			end
 		end
 	end

@@ -18,25 +18,37 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+require_relative 'polling'
+
+require 'rb-fsevent'
+
 module Build
 	module Files
 		module Monitor
-			case RUBY_PLATFORM
-			when /linux/i
-				require_relative 'monitor/inotify'
-				Native = INotify
-				Default = Native
-			when /darwin/i
-				require_relative 'monitor/fsevent'
-				Native = FSEvent
-				Default = Native
-			else 
-				require_relative 'monitor/polling'
-				Default = Polling
-			end
-		
-			def self.new(*args)
-				Default.new(*args)
+			class FSEvent < Polling
+				def run(**options, &block)
+					notifier = ::FSEvent.new
+					
+					catch(:interrupt) do
+						while true
+							notifier.watch self.roots do |directories|
+								directories.collect! do |directory|
+									File.expand_path(directory)
+								end
+								
+								self.update(directories)
+								
+								yield
+								
+								if self.updated
+									notifier.stop
+								end
+							end
+							
+							notifier.run
+						end
+					end
+				end
 			end
 		end
 	end

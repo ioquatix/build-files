@@ -123,13 +123,24 @@ module Build
 				self.class.new(@full_path + extension, @root)
 			end
 			
+			# Add a path component to the current path.
+			# @param path [String, nil] (Optionally) the path to append.
 			def +(path)
-				self.class.new(File.join(@full_path, path), @root)
+				if path
+					self.class.new(File.join(@full_path, path), @root)
+				else
+					self
+				end
 			end
 			
-			# Define a new root with a sub-path:
+			# Use the current path to define a new root, with an optional sub-path.
+			# @param path [String, nil] (Optionally) the path to append.
 			def /(path)
-				self.class.new(File.join(self, path), self)
+				if path
+					self.class.new(File.join(self, path), self)
+				else
+					self.class.new(self, self)
+				end
 			end
 			
 			def rebase(root)
