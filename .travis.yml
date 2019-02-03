@@ -11,3 +11,4 @@ matrix:
       env: COVERAGE=BriefSummary,Coveralls
     - rvm: 2.6
       os: osx
+      env: COVERAGE=BriefSummary,Coveralls
