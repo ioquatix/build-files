@@ -138,31 +138,34 @@ module Build
 				"<State Added:#{@added} Removed:#{@removed} Changed:#{@changed} Missing:#{@missing}>"
 			end
 			
-			# Are these files dirty with respect to the given inputs?
+			# Are these (output) files dirty with respect to the given inputs?
 			def dirty?(inputs)
-				self.class.dirty?(inputs, self)
-			end
-			
-			def self.dirty?(inputs, outputs)
-				if outputs.missing?
-					# puts "Output file missing: #{output_state.missing.inspect}"
+				if self.missing?
 					return true
 				end
 				
 				# If there are no inputs or no outputs, we are always clean:
-				if inputs.empty? or outputs.empty?
+				if inputs.empty? or self.empty?
 					return false
 				end
 				
-				oldest_output_time = outputs.oldest_time
+				oldest_output_time = self.oldest_time
 				newest_input_time = inputs.newest_time
 				
 				if newest_input_time and oldest_output_time
 					# We are dirty if any inputs are newer (bigger) than any outputs:
-					return newest_input_time > oldest_output_time
+					if newest_input_time > oldest_output_time
+						return true
+					else
+						return false
+					end
 				end
 				
 				return true
+			end
+			
+			def self.dirty?(inputs, outputs)
+				outputs.dirty?(inputs)
 			end
 		end
 	end
