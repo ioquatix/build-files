@@ -207,8 +207,10 @@ module Build
 				self.class.eql?(other.class) and @root.eql?(other.root) and @full_path.eql?(other.full_path)
 			end
 			
-			def ==(other)
-				self.to_s == other.to_s
+			include Comparable
+			
+			def <=>(other)
+				self.to_s <=> other.to_s
 			end
 			
 			# Match a path with a given pattern, using `File#fnmatch`.
