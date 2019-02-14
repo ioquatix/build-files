@@ -55,7 +55,13 @@ module Build
 				# The difference between the root path and the required path, taking into account the common prefix:
 				up = root_components.size - i
 				
-				return File.join([".."] * up + path_components[i..-1])
+				components = [".."] * up + path_components[i..-1]
+				
+				if components.empty?
+					return "."
+				else
+					return File.join(components)
+				end
 			end
 			
 			def self.relative_path(root, full_path)

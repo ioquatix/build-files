@@ -28,6 +28,12 @@ RSpec.describe Build::Files::Path do
 		expect(Build::Files::Path.expand("foo", "/bar")).to be == "/bar/foo"
 	end
 	
+	it "should give current path" do
+		path = Build::Files::Path.new("/a/b/c/file.cpp")
+		
+		expect(path.shortest_path(path)).to be == "."
+	end
+	
 	it "should give the shortest path for outer paths" do
 		input = Build::Files::Path.new("/a/b/c/file.cpp")
 		output = Build::Files::Path.new("/a/b/c/d/e/")
