@@ -89,9 +89,6 @@ module Build
 					# Effectively dirname and basename:
 					@root, _, @relative_path = full_path.rpartition(File::SEPARATOR)
 				end
-				
-				# This improves the cost of hash/eql? slightly but the root cannot be deconstructed if it was an instance of Path.
-				# @root = @root.to_s
 			end
 			
 			attr :root
@@ -116,7 +113,7 @@ module Build
 			alias parts components
 			
 			def relative_path
-				@relative_path ||= Path.relative_path(@root.to_s, @full_path).freeze
+				@relative_path ||= Path.relative_path(@root.to_s, @full_path.to_s).freeze
 			end
 			
 			def relative_parts
@@ -190,7 +187,7 @@ module Build
 			end
 			
 			def to_str
-				@full_path
+				@full_path.to_str
 			end
 			
 			def to_path
@@ -198,7 +195,8 @@ module Build
 			end
 			
 			def to_s
-				@full_path
+				# It's not guaranteed to be string.
+				@full_path.to_s
 			end
 			
 			def inspect
