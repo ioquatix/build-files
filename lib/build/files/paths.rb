@@ -69,5 +69,11 @@ module Build
 				self.new(paths, [root])
 			end
 		end
+		
+		class Path
+			def list(*relative_paths)
+				Paths.directory(self, relative_paths)
+			end
+		end
 	end
 end
