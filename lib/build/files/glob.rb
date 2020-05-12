@@ -44,12 +44,15 @@ module Build
 			def full_pattern
 				Path.join(@root, @pattern)
 			end
-		
+			
 			# Enumerate all paths matching the pattern.
 			def each(&block)
-				return to_enum(:each) unless block_given?
+				return to_enum unless block_given?
 				
-				Dir.glob(full_pattern) do |path|
+				::Dir.glob(full_pattern, ::File::FNM_DOTMATCH) do |path|
+					# Ignore `.` and `..` entries.
+					next if path =~ /\/..?$/
+					
 					yield Path.new(path, @root)
 				end
 			end
@@ -57,15 +60,15 @@ module Build
 			def eql?(other)
 				self.class.eql?(other.class) and @root.eql?(other.root) and @pattern.eql?(other.pattern)
 			end
-		
+			
 			def hash
 				[@root, @pattern].hash
 			end
-		
+			
 			def include?(path)
 				File.fnmatch(full_pattern, path)
 			end
-		
+			
 			def rebase(root)
 				self.class.new(root, @pattern)
 			end

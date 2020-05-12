@@ -20,30 +20,34 @@
 
 require 'build/files/glob'
 
-module Build::Files::GlobSpec
-	include Build::Files
+RSpec.describe Build::Files::Glob do
+	let(:path) {Build::Files::Path.new(__dir__)}
 	
-	describe Build::Files::Glob do
-		let(:path) {Path.new(__dir__)}
+	it "can glob paths" do
+		paths = path.glob("*.rb")
 		
-		it "can glob paths" do
-			paths = path.glob("*.rb")
-			
-			expect(paths.count).to be >= 1
-		end
+		expect(paths.count).to be >= 1
+	end
+	
+	it "can be used as key in hash" do
+		cache = {}
 		
-		it "can be used as key in hash" do
-			cache = {}
-			
-			cache[path.glob("*.rb")] = true
-			
-			expect(cache).to be_include(path.glob("*.rb"))
-		end
+		cache[path.glob("*.rb")] = true
 		
-		it "should print nice string represenation" do
-			glob = Build::Files::Glob.new(".", "*.rb")
+		expect(cache).to be_include(path.glob("*.rb"))
+	end
+	
+	it "should print nice string represenation" do
+		glob = Build::Files::Glob.new(".", "*.rb")
+		
+		expect("#{glob}").to be == '<Glob "."/"*.rb">'
+	end
+	
+	context 'with dotfiles' do
+		it "should list files starting with dot" do
+			paths = path.glob("glob_spec/dotfiles/**/*")
 			
-			expect("#{glob}").to be == '<Glob "."/"*.rb">'
+			expect(paths.count).to be == 1
 		end
 	end
 end
