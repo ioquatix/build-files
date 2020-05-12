@@ -55,13 +55,13 @@ module Build
 				other.any?{|path| include?(path)}
 			end
 			
-			def with(**args)
-				return to_enum(:with, **args) unless block_given?
+			def with(**options)
+				return to_enum(:with, **options) unless block_given?
 				
 				paths = []
 				
-				each do |path|
-					updated_path = path.with(args)
+				self.each do |path|
+					updated_path = path.with(**options)
 					
 					yield path, updated_path
 					
