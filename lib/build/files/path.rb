@@ -173,12 +173,12 @@ module Build
 				self.new(File.join(root, relative_path), root)
 			end
 			
-			# Expand a subpath within a given root, similar to `File.expand_path`
-			def self.expand(subpath, root = Dir.getwd)
-				if subpath.start_with? File::SEPARATOR
-					self.new(subpath)
+			# Expand a path within a given root.
+			def self.expand(path, root = Dir.getwd)
+				if path.start_with?(File::SEPARATOR)
+					self.new(path)
 				else
-					self.join(root, subpath)
+					self.join(root, path)
 				end
 			end
 			
