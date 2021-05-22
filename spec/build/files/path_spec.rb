@@ -91,6 +91,16 @@ RSpec.describe Build::Files::Path.new("/foo/bar.txt") do
 	end
 end
 
+RSpec.describe Build::Files::Path.new("/foo") do
+	it "can compute parent path" do
+		parent = subject.parent
+		
+		expect(parent.root).to be == ""
+		expect(parent.relative_path).to be == ""
+		expect(parent.full_path).to be == "/"
+	end
+end
+
 RSpec.describe Build::Files::Path.new("/foo/bar/baz", "/foo") do
 	it "can compute parent path" do
 		parent = subject.parent
@@ -98,6 +108,15 @@ RSpec.describe Build::Files::Path.new("/foo/bar/baz", "/foo") do
 		expect(parent.root).to be == subject.root
 		expect(parent.relative_path).to be == "bar"
 		expect(parent.full_path).to be == "/foo/bar"
+	end
+	
+	it "can compute parent path of child path" do
+		child = subject / "blep"
+		parent = child.parent
+		
+		expect(parent.root).to be == subject.root
+		expect(parent.relative_path).to be == subject.relative_path
+		expect(parent.full_path).to be == subject.full_path
 	end
 	
 	it "can add nil path" do

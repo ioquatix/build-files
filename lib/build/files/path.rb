@@ -110,6 +110,8 @@ module Build
 				@full_path.length
 			end
 			
+			alias size length
+			
 			def components
 				@components ||= @full_path.split(File::SEPARATOR).freeze
 			end
@@ -123,6 +125,10 @@ module Build
 				full_path = File.dirname(@full_path)
 				
 				while root.size > full_path.size
+					root = Path.root(root)
+				end
+				
+				if root.size == full_path.size
 					root = Path.root(root)
 				end
 				
