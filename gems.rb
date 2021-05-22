@@ -8,8 +8,3 @@ group :maintenance, optional: true do
 	
 	gem "utopia-project"
 end
-
-group :test do
-	gem 'rb-fsevent'
-	gem 'rb-inotify'
-end
