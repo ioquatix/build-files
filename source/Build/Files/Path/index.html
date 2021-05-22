@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		
+			<title>Build::Files::Path</title>
+		
+		<meta charset="UTF-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		
+		<link rel="icon" type="image/png" href="../../../../_static/icon.png"/>
+		<link rel="stylesheet" href="../../../../_static/site.css" type="text/css" media="screen"/>
+		
+		<script src="../../../../_components/jquery/jquery.min.js"></script>
+		<script src="../../../../_components/jquery-syntax/jquery.syntax.min.js"></script>
+		
+		<script src="../../../../_static/links.js"></script>
+		
+		<script type="text/javascript">
+		//<![CDATA[
+			jQuery(function($) {
+				$.syntax();
+			});
+		//]]>
+		</script>
+	</head>
+
+	<body>
+		<header> › <a class="link" href="../../../../index.html">Project</a> › <a class="link" href="../../../index.html">Source</a></header>
+		
+		<main>
+			
+	<h1><code class="language-ruby">Build::Files::Path</code></h1>
+	
+	<p>Represents a file path with an absolute root and a relative offset:</p>
+	
+	
+	<section>
+	<h2>Definitions</h2>
+	
+	<section id="Build::Files::Path#open"><h3><code class="language-ruby">def open(mode, &amp;block)</code></h3><p>Open a file with the specified mode.</p>
+<details>
+						<summary><h4>Implementation</h4></summary>
+						<pre><code class="language-ruby">def open(mode, &amp;block)
+	File.open(self, mode, &amp;block)
+end</code></pre>
+					</details></section><section id="Build::Files::Path#read"><h3><code class="language-ruby">def read(mode = File::RDONLY)</code></h3><p>Read the entire contents of the file.</p>
+<details>
+						<summary><h4>Implementation</h4></summary>
+						<pre><code class="language-ruby">def read(mode = File::RDONLY)
+	open(mode) do |file|
+		file.read
+	end
+end</code></pre>
+					</details></section><section id="Build::Files::Path#write"><h3><code class="language-ruby">def write(buffer, mode = File::CREAT|File::TRUNC|File::WRONLY)</code></h3><p>Write a buffer to the file, creating it if it doesn't exist.</p>
+<details>
+						<summary><h4>Implementation</h4></summary>
+						<pre><code class="language-ruby">def write(buffer, mode = File::CREAT|File::TRUNC|File::WRONLY)
+	open(mode) do |file|
+		file.write(buffer)
+	end
+end</code></pre>
+					</details></section><section id="Build::Files::Path#touch"><h3><code class="language-ruby">def touch</code></h3><p>Touch the file, changing it's last modified time.</p>
+<details>
+						<summary><h4>Implementation</h4></summary>
+						<pre><code class="language-ruby">def touch
+	FileUtils.touch self
+end</code></pre>
+					</details></section><section id="Build::Files::Path#exist?"><h3><code class="language-ruby">def exist?</code></h3><p>Checks if the file exists in the local file system.</p>
+<details>
+						<summary><h4>Implementation</h4></summary>
+						<pre><code class="language-ruby">def exist?
+	File.exist? self
+end</code></pre>
+					</details></section><section id="Build::Files::Path#directory?"><h3><code class="language-ruby">def directory?</code></h3><p>Checks if the path refers to a directory.</p>
+<details>
+						<summary><h4>Implementation</h4></summary>
+						<pre><code class="language-ruby">def directory?
+	File.directory? self
+end</code></pre>
+					</details></section><section id="Build::Files::Path#modified_time"><h3><code class="language-ruby">def modified_time</code></h3><p>The time the file was last modified.</p>
+<details>
+						<summary><h4>Implementation</h4></summary>
+						<pre><code class="language-ruby">def modified_time
+	File.mtime self
+end</code></pre>
+					</details></section><section id="Build::Files::Path#mkpath"><h3><code class="language-ruby">def mkpath</code></h3><p>Recursively create a directory hierarchy for the given path.</p>
+<details>
+						<summary><h4>Implementation</h4></summary>
+						<pre><code class="language-ruby">def mkpath
+	FileUtils.mkpath self
+end</code></pre>
+					</details></section><section id="Build::Files::Path#rm"><h3><code class="language-ruby">def rm</code></h3><p>Recursively delete the given path and all contents.</p>
+<details>
+						<summary><h4>Implementation</h4></summary>
+						<pre><code class="language-ruby">def rm
+	FileUtils.rm_rf self
+end</code></pre>
+					</details></section><section id="Build::Files::Path.prefix_length"><h3><code class="language-ruby">def self.prefix_length(a, b)</code></h3><p>Returns the length of the prefix which is shared by two strings.</p>
+<details>
+						<summary><h4>Implementation</h4></summary>
+						<pre><code class="language-ruby">def self.prefix_length(a, b)
+	[a.size, b.size].min.times{|i| return i if a[i] != b[i]}
+end</code></pre>
+					</details></section><section id="Build::Files::Path.components"><h3><code class="language-ruby">def self.components(path)</code></h3><p>Returns a list of components for a path, either represented as a Path instance or a String.</p>
+<details>
+						<summary><h4>Implementation</h4></summary>
+						<pre><code class="language-ruby">def self.components(path)
+	if Path === path
+		path.components
+	else
+		path.split(File::SEPARATOR)
+	end
+end</code></pre>
+					</details></section><section id="Build::Files::Path.shortest_path"><h3><code class="language-ruby">def self.shortest_path(path, root)</code></h3><p>Return the shortest relative path to get to path from root. Root should be a directory with which you are computing the relative path.</p>
+<details>
+						<summary><h4>Implementation</h4></summary>
+						<pre><code class="language-ruby">def self.shortest_path(path, root)
+	path_components = Path.components(path)
+	root_components = Path.components(root)
+	
+	# Find the common prefix:
+	i = prefix_length(path_components, root_components) || 0
+	
+	# The difference between the root path and the required path, taking into account the common prefix:
+	up = root_components.size - i
+	
+	components = [&quot;..&quot;] * up + path_components[i..-1]
+	
+	if components.empty?
+		return &quot;.&quot;
+	else
+		return File.join(components)
+	end
+end</code></pre>
+					</details></section><section id="Build::Files::Path#initialize"><h3><code class="language-ruby">def initialize(full_path, root = nil, relative_path = nil)</code></h3><p>Both paths must be full absolute paths, and path must have root as an prefix.</p>
+<details>
+						<summary><h4>Implementation</h4></summary>
+						<pre><code class="language-ruby">def initialize(full_path, root = nil, relative_path = nil)
+	# This is the object identity:
+	@full_path = full_path
+	
+	if root
+		@root = root
+		@relative_path = relative_path
+	else
+		# Effectively dirname and basename:
+		@root, _, @relative_path = full_path.rpartition(File::SEPARATOR)
+	end
+end</code></pre>
+					</details></section><section id="Build::Files::Path#+"><h3><code class="language-ruby">def +(path)</code></h3><p>Add a path component to the current path.</p>
+<details>
+						<summary><h4>Implementation</h4></summary>
+						<pre><code class="language-ruby">def +(path)
+	if path
+		self.class.new(File.join(@full_path, path), @root)
+	else
+		self
+	end
+end</code></pre>
+					</details></section><section id="Build::Files::Path#/"><h3><code class="language-ruby">def /(path)</code></h3><p>Use the current path to define a new root, with an optional sub-path.</p>
+<details>
+						<summary><h4>Implementation</h4></summary>
+						<pre><code class="language-ruby">def /(path)
+	if path
+		self.class.new(File.join(self, path), self)
+	else
+		self.class.new(self, self)
+	end
+end</code></pre>
+					</details></section><section id="Build::Files::Path.expand"><h3><code class="language-ruby">def self.expand(path, root = Dir.getwd)</code></h3><p>Expand a path within a given root.</p>
+<details>
+						<summary><h4>Implementation</h4></summary>
+						<pre><code class="language-ruby">def self.expand(path, root = Dir.getwd)
+	if path.start_with?(File::SEPARATOR)
+		self.new(path)
+	else
+		self.join(root, path)
+	end
+end</code></pre>
+					</details></section><section id="Build::Files::Path#match"><h3><code class="language-ruby">def match(pattern, flags = 0)</code></h3><p>Match a path with a given pattern, using <code>File#fnmatch</code>.</p>
+<details>
+						<summary><h4>Implementation</h4></summary>
+						<pre><code class="language-ruby">def match(pattern, flags = 0)
+	path = pattern.start_with?('/') ? full_path : relative_path
+	
+	return File.fnmatch(pattern, path, flags)
+end</code></pre>
+					</details></section>	</section>
+
+				
+			<footer>Documentation generated by <a href="https://github.com/socketry/utopia-project">Utopia::Project</a>.</footer>
+		</main>
+	</body>
+</html>

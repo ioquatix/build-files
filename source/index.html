@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		
+			<title>Source</title>
+		
+		<meta charset="UTF-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		
+		<link rel="icon" type="image/png" href="../_static/icon.png"/>
+		<link rel="stylesheet" href="../_static/site.css" type="text/css" media="screen"/>
+		
+		<script src="../_components/jquery/jquery.min.js"></script>
+		<script src="../_components/jquery-syntax/jquery.syntax.min.js"></script>
+		
+		<script src="../_static/links.js"></script>
+		
+		<script type="text/javascript">
+		//<![CDATA[
+			jQuery(function($) {
+				$.syntax();
+			});
+		//]]>
+		</script>
+	</head>
+
+	<body>
+		<header> › <a class="link" href="../index.html">Project</a> › <a class="link" href="index.html">Source</a></header>
+		
+		<main>
+			
+	<h1>Source</h1>
+	
+	<ul class="index"><li>
+					<a href="Build/index.html"><code class="language-ruby">module Build</code></a>
+					
+					
+					<ul class="index"><li>
+					<a href="Build/Files/index.html"><code class="language-ruby">module Files</code></a>
+					
+					
+					<ul class="index"><li>
+					<a href="Build/Files/Directory/index.html"><code class="language-ruby">class Directory &lt; List</code></a>
+					
+					
+					<ul class="index"><li>
+					<a href="Build/Files/Directory/index.html#Build%3A%3AFiles%3A%3ADirectory%23to_str"><code class="language-ruby">def to_str</code></a>
+					
+						<p>Convert a Directory into a String, can be used as an argument to a command.</p>
+
+					
+									</li></ul>				</li><li>
+					<a href="Build/Files/Path/index.html"><code class="language-ruby">class Path</code></a>
+					
+						<p>Represents a file path with an absolute root and a relative offset:</p>
+
+					
+					<ul class="index"><li>
+					<a href="Build/Files/Path/index.html#Build%3A%3AFiles%3A%3APath%23open"><code class="language-ruby">def open(mode, &amp;block)</code></a>
+					
+						<p>Open a file with the specified mode.</p>
+
+					
+									</li><li>
+					<a href="Build/Files/Path/index.html#Build%3A%3AFiles%3A%3APath%23read"><code class="language-ruby">def read(mode = File::RDONLY)</code></a>
+					
+						<p>Read the entire contents of the file.</p>
+
+					
+									</li><li>
+					<a href="Build/Files/Path/index.html#Build%3A%3AFiles%3A%3APath%23write"><code class="language-ruby">def write(buffer, mode = File::CREAT|File::TRUNC|File::WRONLY)</code></a>
+					
+						<p>Write a buffer to the file, creating it if it doesn't exist.</p>
+
+					
+									</li><li>
+					<a href="Build/Files/Path/index.html#Build%3A%3AFiles%3A%3APath%23touch"><code class="language-ruby">def touch</code></a>
+					
+						<p>Touch the file, changing it's last modified time.</p>
+
+					
+									</li><li>
+					<a href="Build/Files/Path/index.html#Build%3A%3AFiles%3A%3APath%23exist%3F"><code class="language-ruby">def exist?</code></a>
+					
+						<p>Checks if the file exists in the local file system.</p>
+
+					
+									</li><li>
+					<a href="Build/Files/Path/index.html#Build%3A%3AFiles%3A%3APath%23directory%3F"><code class="language-ruby">def directory?</code></a>
+					
+						<p>Checks if the path refers to a directory.</p>
+
+					
+									</li><li>
+					<a href="Build/Files/Path/index.html#Build%3A%3AFiles%3A%3APath%23modified_time"><code class="language-ruby">def modified_time</code></a>
+					
+						<p>The time the file was last modified.</p>
+
+					
+									</li><li>
+					<a href="Build/Files/Path/index.html#Build%3A%3AFiles%3A%3APath%23mkpath"><code class="language-ruby">def mkpath</code></a>
+					
+						<p>Recursively create a directory hierarchy for the given path.</p>
+
+					
+									</li><li>
+					<a href="Build/Files/Path/index.html#Build%3A%3AFiles%3A%3APath%23rm"><code class="language-ruby">def rm</code></a>
+					
+						<p>Recursively delete the given path and all contents.</p>
+
+					
+									</li><li>
+					<a href="Build/Files/Path/index.html#Build%3A%3AFiles%3A%3APath.prefix_length"><code class="language-ruby">def self.prefix_length(a, b)</code></a>
+					
+						<p>Returns the length of the prefix which is shared by two strings.</p>
+
+					
+									</li><li>
+					<a href="Build/Files/Path/index.html#Build%3A%3AFiles%3A%3APath.components"><code class="language-ruby">def self.components(path)</code></a>
+					
+						<p>Returns a list of components for a path, either represented as a Path instance or a String.</p>
+
+					
+									</li><li>
+					<a href="Build/Files/Path/index.html#Build%3A%3AFiles%3A%3APath.shortest_path"><code class="language-ruby">def self.shortest_path(path, root)</code></a>
+					
+						<p>Return the shortest relative path to get to path from root. Root should be a directory with which you are computing the relative path.</p>
+
+					
+									</li><li>
+					<a href="Build/Files/Path/index.html#Build%3A%3AFiles%3A%3APath%23initialize"><code class="language-ruby">def initialize(full_path, root = nil, relative_path = nil)</code></a>
+					
+						<p>Both paths must be full absolute paths, and path must have root as an prefix.</p>
+
+					
+									</li><li>
+					<a href="Build/Files/Path/index.html#Build%3A%3AFiles%3A%3APath%23%2B"><code class="language-ruby">def +(path)</code></a>
+					
+						<p>Add a path component to the current path.</p>
+
+					
+									</li><li>
+					<a href="Build/Files/Path/index.html#Build%3A%3AFiles%3A%3APath%23%2F"><code class="language-ruby">def /(path)</code></a>
+					
+						<p>Use the current path to define a new root, with an optional sub-path.</p>
+
+					
+									</li><li>
+					<a href="Build/Files/Path/index.html#Build%3A%3AFiles%3A%3APath.expand"><code class="language-ruby">def self.expand(path, root = Dir.getwd)</code></a>
+					
+						<p>Expand a path within a given root.</p>
+
+					
+									</li><li>
+					<a href="Build/Files/Path/index.html#Build%3A%3AFiles%3A%3APath%23match"><code class="language-ruby">def match(pattern, flags = 0)</code></a>
+					
+						<p>Match a path with a given pattern, using <code>File#fnmatch</code>.</p>
+
+					
+									</li></ul>				</li><li>
+					<a href="Build/Files/List/index.html"><code class="language-ruby">class List</code></a>
+					
+						<p>A list of paths, where #each yields instances of Path.</p>
+
+					
+					<ul class="index"><li>
+					<a href="Build/Files/List/index.html#Build%3A%3AFiles%3A%3AList%23touch"><code class="language-ruby">def touch</code></a>
+					
+						<p>Touch all listed files.</p>
+
+					
+									</li><li>
+					<a href="Build/Files/List/index.html#Build%3A%3AFiles%3A%3AList%23exist%3F"><code class="language-ruby">def exist?</code></a>
+					
+						<p>Check that all files listed exist.</p>
+
+					
+									</li><li>
+					<a href="Build/Files/List/index.html#Build%3A%3AFiles%3A%3AList%23create"><code class="language-ruby">def create</code></a>
+					
+						<p>Recursively create paths for all listed paths.</p>
+
+					
+									</li><li>
+					<a href="Build/Files/List/index.html#Build%3A%3AFiles%3A%3AList%23delete"><code class="language-ruby">def delete</code></a>
+					
+						<p>Recursively delete all paths and all contents within those paths.</p>
+
+					
+									</li><li>
+					<a href="Build/Files/List/index.html#Build%3A%3AFiles%3A%3AList%23%2B"><code class="language-ruby">def +(list)</code></a>
+					
+						<p>Create a composite list out of two other lists:</p>
+
+					
+									</li><li>
+					<a href="Build/Files/List/index.html#Build%3A%3AFiles%3A%3AList%23%3D%3D"><code class="language-ruby">def ==(other)</code></a>
+					
+						<p>This isn't very efficient, but it IS generic.</p>
+
+					
+									</li><li>
+					<a href="Build/Files/List/index.html#Build%3A%3AFiles%3A%3AList%23intersects%3F"><code class="language-ruby">def intersects? other</code></a>
+					
+						<p>Does this list of files include the path of any other?</p>
+
+					
+									</li></ul>				</li><li>
+					<a href="Build/Files/Difference/index.html"><code class="language-ruby">class Difference &lt; List</code></a>
+					
+					
+					<ul class="index"></ul>				</li><li>
+					<a href="Build/Files/Paths/index.html"><code class="language-ruby">class Paths &lt; List</code></a>
+					
+					
+					<ul class="index"><li>
+					<a href="Build/Files/Paths/index.html#Build%3A%3AFiles%3A%3APaths%23roots"><code class="language-ruby">def roots</code></a>
+					
+						<p>The list of roots for a given list of immutable files is also immutable, so we cache it for performance:</p>
+
+					
+									</li></ul>				</li><li>
+					<a href="Build/Files/Composite/index.html"><code class="language-ruby">class Composite &lt; List</code></a>
+					
+					
+					<ul class="index"></ul>				</li><li>
+					<a href="Build/Files/Glob/index.html"><code class="language-ruby">class Glob &lt; List</code></a>
+					
+					
+					<ul class="index"><li>
+					<a href="Build/Files/Glob/index.html#Build%3A%3AFiles%3A%3AGlob%23each"><code class="language-ruby">def each(&amp;block)</code></a>
+					
+						<p>Enumerate all paths matching the pattern.</p>
+
+					
+									</li></ul>				</li></ul>				</li></ul>				</li></ul>
+				
+			<footer>Documentation generated by <a href="https://github.com/socketry/utopia-project">Utopia::Project</a>.</footer>
+		</main>
+	</body>
+</html>
