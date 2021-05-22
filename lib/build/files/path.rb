@@ -22,6 +22,10 @@ module Build
 	module Files
 		# Represents a file path with an absolute root and a relative offset:
 		class Path
+			def self.current
+				self.new(::Dir.pwd)
+			end
+			
 			def self.split(path)
 				# Effectively dirname and basename:
 				dirname, separator, filename = path.rpartition(File::SEPARATOR)
@@ -41,6 +45,14 @@ module Build
 					path.components
 				else
 					path.split(File::SEPARATOR)
+				end
+			end
+			
+			def self.root(path)
+				if Path === path
+					path.root
+				else
+					File.dirname(path)
 				end
 			end
 			
@@ -104,6 +116,17 @@ module Build
 			
 			def basename
 				self.parts.last
+			end
+			
+			def parent
+				root = @root
+				full_path = File.dirname(@full_path)
+				
+				while root.size > full_path.size
+					root = Path.root(root)
+				end
+				
+				self.class.new(full_path, root)
 			end
 			
 			def start_with?(*args)

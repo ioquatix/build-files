@@ -24,6 +24,10 @@ require 'build/files/path'
 require 'pathname'
 
 RSpec.describe Build::Files::Path do
+	it "can get current path" do
+		expect(Build::Files::Path.current.full_path).to be == Dir.pwd
+	end
+	
 	it "should expand the path" do
 		expect(Build::Files::Path.expand("foo", "/bar")).to be == "/bar/foo"
 	end
@@ -88,6 +92,14 @@ RSpec.describe Build::Files::Path.new("/foo/bar.txt") do
 end
 
 RSpec.describe Build::Files::Path.new("/foo/bar/baz", "/foo") do
+	it "can compute parent path" do
+		parent = subject.parent
+		
+		expect(parent.root).to be == subject.root
+		expect(parent.relative_path).to be == "bar"
+		expect(parent.full_path).to be == "/foo/bar"
+	end
+	
 	it "can add nil path" do
 		expect(subject + nil).to be == subject
 	end
