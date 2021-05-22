@@ -24,7 +24,4 @@ require_relative 'files/paths'
 require_relative 'files/glob'
 require_relative 'files/directory'
 
-require_relative 'files/state'
-require_relative 'files/monitor'
-
 require_relative 'files/system'
