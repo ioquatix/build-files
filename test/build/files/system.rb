@@ -37,4 +37,15 @@ describe Build::Files::Path do
 		
 		expect(path.directory?).to be == true
 	end
+	
+	it "can copy files" do
+		path.create
+		source_path = Path.new(__dir__)/".directory"
+		
+		directory = Directory.new(source_path)
+		directory.copy(path)
+		
+		destination_directory = Directory.new(path)
+		expect(destination_directory).not.to be(:empty?)
+	end
 end

@@ -13,7 +13,7 @@ module Build
 		class Path
 			# Open a file with the specified mode.
 			def open(mode, &block)
-				File.open(self, mode, &block)
+				File.open(self.to_s, mode, &block)
 			end
 			
 			# Read the entire contents of the file.
@@ -30,52 +30,60 @@ module Build
 				end
 			end
 			
+			def copy(destination)
+				if directory?
+					destination.create
+				else
+					FileUtils.cp(self.to_s, destination.to_s)
+				end
+			end
+			
 			# Touch the file, changing it's last modified time.
 			def touch
-				FileUtils.touch self
+				FileUtils.touch(self.to_s)
 			end
 			
 			def stat
-				File.stat self
+				File.stat(self.to_s)
 			end
 			
 			# Checks if the file exists in the local file system.
 			def exist?
-				File.exist? self
+				File.exist?(self.to_s)
 			end
 			
 			# Checks if the path refers to a directory.
 			def directory?
-				File.directory? self
+				File.directory?(self.to_s)
 			end
 			
 			def file?
-				File.file? self
+				File.file?(self.to_s)
 			end
 			
 			def symlink?
-				File.symlink? self
+				File.symlink?(self.to_s)
 			end
 			
 			def readable?
-				File.readable? self
+				File.readable?(self.to_s)
 			end
 			
 			# The time the file was last modified.
 			def modified_time
-				File.mtime self
+				File.mtime(self.to_s)
 			end
 			
 			# Recursively create a directory hierarchy for the given path.
 			def mkpath
-				FileUtils.mkpath self
+				FileUtils.mkpath(self.to_s)
 			end
 			
 			alias create mkpath
 			
 			# Recursively delete the given path and all contents.
 			def rm
-				FileUtils.rm_rf self
+				FileUtils.rm_rf(self.to_s)
 			end
 			
 			alias delete rm
@@ -100,6 +108,12 @@ module Build
 			# Recursively delete all paths and all contents within those paths.
 			def delete
 				each(&:delete)
+			end
+			
+			def copy(destination)
+				each do |path|
+					path.copy(destination / path.relative_path)
+				end
 			end
 		end
 	end
