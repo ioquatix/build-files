@@ -1,29 +1,14 @@
-# Copyright, 2012, by Samuel G. D. Williams. <http://www.codeotaku.com>
-# 
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-# 
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-# 
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
+# frozen_string_literal: true
+
+# Released under the MIT License.
+# Copyright, 2014-2023, by Samuel Williams.
 
 require 'build/files'
 require 'build/files/path'
 
 require 'pathname'
 
-RSpec.describe Build::Files::Path do
+describe Build::Files::Path do
 	it "can get current path" do
 		expect(Build::Files::Path.current.full_path).to be == Dir.pwd
 	end
@@ -65,33 +50,37 @@ RSpec.describe Build::Files::Path do
 		
 		expect(File.expand_path(short, output)).to be == input
 	end
-end
-
-RSpec.describe Build::Files::Path.new("/test") do
-	it "should start_with? full path" do
-		expect(subject).to be_start_with '/test'
+	
+	with "test directory"  do
+		let(:directory) {Build::Files::Path.new("/test")}
+		
+		it "should start_with? full path" do
+			expect(directory).to be(:start_with?, '/test')
+		end
+		
+		it "should start_with? partial pattern" do
+			expect(directory).to be(:start_with?, '/te')
+		end
 	end
 	
-	it "should start_with? partial pattern" do
-		expect(subject).to be_start_with '/te'
+	with "text file path" do
+		let(:path) {Build::Files::Path.new("/foo/bar.txt")}
+	
+		it "should replace existing file extension" do
+			expect(path.with(extension: '.jpeg', basename: true)).to be == "/foo/bar.jpeg"
+		end
+		
+		it "should append file extension" do
+			expect(path.with(extension: '.jpeg')).to be == "/foo/bar.txt.jpeg"
+		end
+		
+		it "should change basename" do
+			expect(path.with(basename: 'baz', extension: '.txt')).to be == "/foo/baz.txt"
+		end	
 	end
 end
 
-RSpec.describe Build::Files::Path.new("/foo/bar.txt") do
-	it "should replace existing file extension" do
-		expect(subject.with(extension: '.jpeg', basename: true)).to be == "/foo/bar.jpeg"
-	end
-	
-	it "should append file extension" do
-		expect(subject.with(extension: '.jpeg')).to be == "/foo/bar.txt.jpeg"
-	end
-	
-	it "should change basename" do
-		expect(subject.with(basename: 'baz', extension: '.txt')).to be == "/foo/baz.txt"
-	end
-end
-
-RSpec.describe Build::Files::Path.new("/foo") do
+describe Build::Files::Path.new("/foo") do
 	it "can compute parent path" do
 		parent = subject.parent
 		
@@ -101,7 +90,7 @@ RSpec.describe Build::Files::Path.new("/foo") do
 	end
 end
 
-RSpec.describe Build::Files::Path.new("/foo/bar/baz", "/foo") do
+describe Build::Files::Path.new("/foo/bar/baz", "/foo") do
 	it "can compute parent path" do
 		parent = subject.parent
 		
@@ -126,7 +115,7 @@ RSpec.describe Build::Files::Path.new("/foo/bar/baz", "/foo") do
 	it "can inspect path with nil root" do
 		expect do
 			(subject / nil).inspect
-		end.to_not raise_error
+		end.not.to raise_exception
 	end
 	
 	it "can add nil root" do
@@ -134,8 +123,8 @@ RSpec.describe Build::Files::Path.new("/foo/bar/baz", "/foo") do
 	end
 	
 	it "should be inspectable" do
-		expect(subject.inspect).to be_include subject.root.to_s
-		expect(subject.inspect).to be_include subject.relative_path.to_s
+		expect(subject.inspect).to be(:include?, subject.root.to_s)
+		expect(subject.inspect).to be(:include?, subject.relative_path.to_s)
 	end
 	
 	it "should convert to path" do
@@ -146,11 +135,11 @@ RSpec.describe Build::Files::Path.new("/foo/bar/baz", "/foo") do
 	end
 	
 	it "should be equal" do
-		expect(subject).to be_eql subject
+		expect(subject).to be(:eql?, subject)
 		expect(subject).to be == subject
 		
 		different_root_path = Build::Files::Path.join("/foo/bar", "baz")
-		expect(subject).to_not be_eql different_root_path
+		expect(subject).not.to be(:eql?, different_root_path)
 		expect(subject).to be == different_root_path
 	end
 	
@@ -167,9 +156,9 @@ RSpec.describe Build::Files::Path.new("/foo/bar/baz", "/foo") do
 		expect(subject.length).to be == subject.to_s.length
 		
 		# Check the return types:
-		expect(subject).to be_kind_of Build::Files::Path
-		expect(subject.root).to be_kind_of String
-		expect(subject.relative_path).to be_kind_of String
+		expect(subject).to be_a Build::Files::Path
+		expect(subject.root).to be_a String
+		expect(subject.relative_path).to be_a String
 	end
 	
 	it "should consist of parts" do
