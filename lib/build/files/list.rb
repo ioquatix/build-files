@@ -40,6 +40,14 @@ module Build
 				other.any?{|path| include?(path)}
 			end
 			
+			def empty?
+				each do
+					return false
+				end
+				
+				return true
+			end
+			
 			def with(**options)
 				return to_enum(:with, **options) unless block_given?
 				
@@ -82,3 +90,5 @@ module Build
 		end
 	end
 end
+
+require_relative 'difference'

@@ -52,8 +52,8 @@ describe Build::Files::Directory do
 		expect(rebased_directory.root).to be == '/fu/bar/baz'
 	end
 	
-	with 'directory' do
-		let(:directory) {Directory.join(__dir__, "directory")}
+	with 'real directory' do
+		let(:directory) {Directory.join(__dir__, ".directory")}
 		
 		it "can list dot files" do
 			expect(directory).to be(:include?, directory.root + '.dot_file.yaml')
@@ -61,6 +61,17 @@ describe Build::Files::Directory do
 		
 		it "can list normal files" do
 			expect(directory).to be(:include?, directory.root + 'normal_file.txt')
+		end
+		
+		it "can enumerate contents" do
+			contents = directory.each.to_a
+			expect(contents).to be(:include?, directory.root + '.dot_file.yaml')
+		end
+	end
+	
+	with '#to_s' do
+		it "can be converted to a string" do
+			expect(directory.to_s).to be == "/foo/bar/baz"
 		end
 	end
 end

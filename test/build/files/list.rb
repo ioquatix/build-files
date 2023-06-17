@@ -47,6 +47,7 @@ describe Build::Files::Paths do
 		
 		paths = paths_a + paths_b
 		
+		expect(paths).not.to be(:empty?)
 		expect(paths.count).to be == 2
 		expect(paths).to be(:include?, path)
 		expect(paths).to be_a Composite
@@ -54,6 +55,14 @@ describe Build::Files::Paths do
 		# Composite equality
 		expect(paths).to be(:eql?, paths)
 		expect(paths).not.to be(:eql?, paths_a)
+	end
+	
+	it "can subtract two lists of paths" do
+		paths_a = Paths.new(path)
+		paths_b = Paths.new(path)
+		
+		paths = paths_a - paths_b
+		expect(paths).to be(:empty?)
 	end
 	
 	it "maps paths with a new extension" do
