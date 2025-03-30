@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 # Released under the MIT License.
-# Copyright, 2015-2023, by Samuel Williams.
+# Copyright, 2015-2025, by Samuel Williams.
 
-require 'build/files'
-require 'build/files/path'
-require 'build/files/system'
+require "build/files"
+require "build/files/path"
+require "build/files/system"
 
-require 'pathname'
+require "pathname"
 
 include Build::Files
 
@@ -15,9 +15,8 @@ describe Build::Files::Path do
 	let(:root) {Path.new(__dir__)}
 	let(:path) {root + ".system-test-#{object_id}"}
 	
-	def after
+	after do
 		path.delete
-		super
 	end
 	
 	it "should open file for writing" do

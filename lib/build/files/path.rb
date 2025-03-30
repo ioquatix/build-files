@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Released under the MIT License.
-# Copyright, 2014-2023, by Samuel Williams.
+# Copyright, 2014-2025, by Samuel Williams.
 
 module Build
 	module Files
@@ -14,7 +14,7 @@ module Build
 			def self.split(path)
 				# Effectively dirname and basename:
 				dirname, separator, filename = path.rpartition(File::SEPARATOR)
-				filename, dot, extension = filename.rpartition('.')
+				filename, dot, extension = filename.rpartition(".")
 				
 				return dirname + separator, filename, dot + extension
 			end
@@ -233,7 +233,7 @@ module Build
 			
 			# Match a path with a given pattern, using `File#fnmatch`.
 			def match(pattern, flags = 0)
-				path = pattern.start_with?('/') ? full_path : relative_path
+				path = pattern.start_with?("/") ? full_path : relative_path
 				
 				return File.fnmatch(pattern, path, flags)
 			end

@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 # Released under the MIT License.
-# Copyright, 2014-2023, by Samuel Williams.
+# Copyright, 2014-2025, by Samuel Williams.
 
-require 'build/files/glob'
+require "build/files/glob"
 
 describe Build::Files::Glob do
 	let(:path) {Build::Files::Path.new(__dir__)}
@@ -28,7 +28,7 @@ describe Build::Files::Glob do
 		expect("#{glob}").to be == '<Glob "."/"*.rb">'
 	end
 	
-	with 'dotfiles' do
+	with "dotfiles" do
 		it "should list files starting with dot" do
 			paths = path.glob(".glob/dotfiles/**/*")
 			

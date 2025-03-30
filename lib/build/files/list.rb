@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 # Released under the MIT License.
-# Copyright, 2014-2023, by Samuel Williams.
+# Copyright, 2014-2025, by Samuel Williams.
 
-require_relative 'path'
+require_relative "path"
 
 module Build
 	module Files
@@ -91,4 +91,4 @@ module Build
 	end
 end
 
-require_relative 'difference'
+require_relative "difference"
