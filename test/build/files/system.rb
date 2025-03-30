@@ -15,9 +15,8 @@ describe Build::Files::Path do
 	let(:root) {Path.new(__dir__)}
 	let(:path) {root + ".system-test-#{object_id}"}
 	
-	def after
+	after do
 		path.delete
-		super
 	end
 	
 	it "should open file for writing" do
