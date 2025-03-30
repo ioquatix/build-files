@@ -44,9 +44,7 @@ describe Build::Files::State do
 end
 
 describe Build::Files::State do
-	def before
-		super
-		
+	before do
 		@temporary_files = Build::Files::Paths.directory(__dir__, ['a'])
 		@temporary_files.touch
 		
@@ -54,10 +52,8 @@ describe Build::Files::State do
 		@old_files = Build::Files::State.new(Build::Files::Glob.new(__dir__, "*.rb"))
 	end
 	
-	def after
+	after do
 		@temporary_files.delete
-		
-		super
 	end
 	
 	let(:empty) {Build::Files::State.new(Build::Files::List::NONE)}
