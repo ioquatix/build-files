@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 # Released under the MIT License.
-# Copyright, 2014-2023, by Samuel Williams.
+# Copyright, 2014-2025, by Samuel Williams.
 
-require 'build/files'
-require 'build/files/state'
+require "build/files"
+require "build/files/state"
 
 describe Build::Files::State do
 	let(:files) {Build::Files::Glob.new(__dir__, "*.rb")}
@@ -21,7 +21,7 @@ describe Build::Files::State do
 	end
 	
 	it "should report missing files" do
-		rebased_files = files.to_paths.rebase(File.join(__dir__, 'foo'))
+		rebased_files = files.to_paths.rebase(File.join(__dir__, "foo"))
 		state = Build::Files::State.new(rebased_files)
 		
 		# Some changes were detected:
@@ -45,7 +45,7 @@ end
 
 describe Build::Files::State do
 	before do
-		@temporary_files = Build::Files::Paths.directory(__dir__, ['a'])
+		@temporary_files = Build::Files::Paths.directory(__dir__, ["a"])
 		@temporary_files.touch
 		
 		@new_files = Build::Files::State.new(@temporary_files)

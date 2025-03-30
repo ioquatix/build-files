@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 # Released under the MIT License.
-# Copyright, 2014-2023, by Samuel Williams.
+# Copyright, 2014-2025, by Samuel Williams.
 
-require 'build/files'
-require 'build/files/path'
+require "build/files"
+require "build/files/path"
 
-require 'pathname'
+require "pathname"
 
 describe Build::Files::Path do
 	it "can get current path" do
@@ -55,11 +55,11 @@ describe Build::Files::Path do
 		let(:directory) {Build::Files::Path.new("/test")}
 		
 		it "should start_with? full path" do
-			expect(directory).to be(:start_with?, '/test')
+			expect(directory).to be(:start_with?, "/test")
 		end
 		
 		it "should start_with? partial pattern" do
-			expect(directory).to be(:start_with?, '/te')
+			expect(directory).to be(:start_with?, "/te")
 		end
 	end
 	
@@ -67,15 +67,15 @@ describe Build::Files::Path do
 		let(:path) {Build::Files::Path.new("/foo/bar.txt")}
 	
 		it "should replace existing file extension" do
-			expect(path.with(extension: '.jpeg', basename: true)).to be == "/foo/bar.jpeg"
+			expect(path.with(extension: ".jpeg", basename: true)).to be == "/foo/bar.jpeg"
 		end
 		
 		it "should append file extension" do
-			expect(path.with(extension: '.jpeg')).to be == "/foo/bar.txt.jpeg"
+			expect(path.with(extension: ".jpeg")).to be == "/foo/bar.txt.jpeg"
 		end
 		
 		it "should change basename" do
-			expect(path.with(basename: 'baz', extension: '.txt')).to be == "/foo/baz.txt"
+			expect(path.with(basename: "baz", extension: ".txt")).to be == "/foo/baz.txt"
 		end	
 	end
 end
@@ -172,11 +172,11 @@ describe Build::Files::Path.new("/foo/bar/baz", "/foo") do
 	end
 	
 	it "should have a new extension" do
-		renamed_path = subject.with(root: '/tmp', extension: '.txt')
+		renamed_path = subject.with(root: "/tmp", extension: ".txt")
 		
-		expect(renamed_path.root).to be == '/tmp'
+		expect(renamed_path.root).to be == "/tmp"
 		
-		expect(renamed_path.relative_path).to be == 'bar/baz.txt'
+		expect(renamed_path.relative_path).to be == "bar/baz.txt"
 		
 		object_path = subject.append(".o")
 	

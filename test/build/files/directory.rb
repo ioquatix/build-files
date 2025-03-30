@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 # Released under the MIT License.
-# Copyright, 2014-2023, by Samuel Williams.
+# Copyright, 2014-2025, by Samuel Williams.
 
-require 'build/files/directory'
+require "build/files/directory"
 
 
 include Build::Files
@@ -13,7 +13,7 @@ describe Build::Files::Directory do
 	let(:directory) {Directory.new(path)}
 	
 	it "can be constructed using join" do
-		joined_directory = Directory.join('/foo', 'bar/baz')
+		joined_directory = Directory.join("/foo", "bar/baz")
 		
 		expect(joined_directory).to be == directory
 	end
@@ -40,7 +40,7 @@ describe Build::Files::Directory do
 	end
 	
 	it "can be compared" do
-		other_directory = Directory.new(path + 'dole')
+		other_directory = Directory.new(path + "dole")
 		
 		expect(directory).to be(:eql?, directory)
 		expect(directory).not.to be(:eql?, other_directory)
@@ -49,27 +49,27 @@ describe Build::Files::Directory do
 	it "can be rebased" do
 		rebased_directory = directory.rebase("/fu")
 		
-		expect(rebased_directory.root).to be == '/fu/bar/baz'
+		expect(rebased_directory.root).to be == "/fu/bar/baz"
 	end
 	
-	with 'real directory' do
+	with "real directory" do
 		let(:directory) {Directory.join(__dir__, ".directory")}
 		
 		it "can list dot files" do
-			expect(directory).to be(:include?, directory.root + '.dot_file.yaml')
+			expect(directory).to be(:include?, directory.root + ".dot_file.yaml")
 		end
 		
 		it "can list normal files" do
-			expect(directory).to be(:include?, directory.root + 'normal_file.txt')
+			expect(directory).to be(:include?, directory.root + "normal_file.txt")
 		end
 		
 		it "can enumerate contents" do
 			contents = directory.each.to_a
-			expect(contents).to be(:include?, directory.root + '.dot_file.yaml')
+			expect(contents).to be(:include?, directory.root + ".dot_file.yaml")
 		end
 	end
 	
-	with '#to_s' do
+	with "#to_s" do
 		it "can be converted to a string" do
 			expect(directory.to_s).to be == "/foo/bar/baz"
 		end

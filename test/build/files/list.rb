@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 # Released under the MIT License.
-# Copyright, 2014-2023, by Samuel Williams.
+# Copyright, 2014-2025, by Samuel Williams.
 
-require 'build/files'
-require 'build/files/list'
-require 'build/files/glob'
+require "build/files"
+require "build/files/list"
+require "build/files/glob"
 
 include Build::Files
 
@@ -43,7 +43,7 @@ describe Build::Files::Paths do
 	
 	it "can add two lists of paths together" do
 		paths_a = Paths.new(path)
-		paths_b = Paths.new(Path.join('/foo/bar', 'alice'))
+		paths_b = Paths.new(Path.join("/foo/bar", "alice"))
 		
 		paths = paths_a + paths_b
 		
@@ -67,9 +67,9 @@ describe Build::Files::Paths do
 	
 	it "maps paths with a new extension" do
 		paths = Paths.new([
-			Path.join('/foo/bar', 'alice'),
-			Path.join('/foo/bar', 'bob'),
-			Path.join('/foo/bar', 'charles'),
+			Path.join("/foo/bar", "alice"),
+			Path.join("/foo/bar", "bob"),
+			Path.join("/foo/bar", "charles"),
 			path
 		])
 		
@@ -85,7 +85,7 @@ describe Build::Files::Paths do
 	end
 	
 	it "globs multiple files" do
-		glob = Glob.new(__dir__, '*.rb')
+		glob = Glob.new(__dir__, "*.rb")
 		
 		expect(glob.count).to be > 1
 		
@@ -166,9 +166,9 @@ describe Build::Files::Paths do
 	end
 	
 	it "can be constructed from a list of relative paths" do
-		paths = Paths.directory('/foo', ['bar', 'baz', 'bob'])
+		paths = Paths.directory("/foo", ["bar", "baz", "bob"])
 		
 		expect(paths.count).to be == 3
-		expect(paths).to be(:include?, Path.new('/foo/bar'))
+		expect(paths).to be(:include?, Path.new("/foo/bar"))
 	end
 end
