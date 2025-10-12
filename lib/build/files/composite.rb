@@ -49,7 +49,7 @@ module Build
 			def eql?(other)
 				self.class.eql?(other.class) and @files.eql?(other.files)
 			end
-		
+			
 			def hash
 				@files.hash
 			end
@@ -61,15 +61,15 @@ module Build
 					self.class.new(@files + [list])
 				end
 			end
-		
+			
 			def include?(path)
 				@files.any? {|list| list.include?(path)}
 			end
-		
+			
 			def rebase(root)
 				self.class.new(@files.collect{|list| list.rebase(root)}, [root])
 			end
-		
+			
 			def to_paths
 				self.class.new(@files.collect(&:to_paths), roots: @roots)
 			end

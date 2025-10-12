@@ -65,7 +65,7 @@ describe Build::Files::Path do
 	
 	with "text file path" do
 		let(:path) {Build::Files::Path.new("/foo/bar.txt")}
-	
+		
 		it "should replace existing file extension" do
 			expect(path.with(extension: ".jpeg", basename: true)).to be == "/foo/bar.jpeg"
 		end
@@ -179,7 +179,7 @@ describe Build::Files::Path.new("/foo/bar/baz", "/foo") do
 		expect(renamed_path.relative_path).to be == "bar/baz.txt"
 		
 		object_path = subject.append(".o")
-	
+		
 		expect(object_path.root).to be == "/foo"
 		expect(object_path.relative_path).to be == "bar/baz.o"
 	end

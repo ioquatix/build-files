@@ -97,27 +97,27 @@ describe Build::Files::Paths do
 	it "should intersect one file in the glob" do
 		# Glob all test files:
 		glob = Glob.new(__dir__, "*.rb")
-	
+		
 		expect(glob.count).to be > 0
-	
+		
 		# Should include this file:
 		expect(glob).to be(:include?, __FILE__)
-	
+		
 		# Glob should intersect self:
 		expect(glob).to be(:intersects?, glob)
 	end
 	
 	it "should include composites" do
 		lib = File.join(__dir__, "../lib")
-	
+		
 		test_glob = Glob.new(__dir__, "*.rb")
 		lib_glob = Glob.new(lib, "*.rb")
-	
+		
 		both = test_glob + lib_glob
-	
+		
 		# List#roots is the generic accessor for Lists
 		expect(both.roots).to be(:include?, test_glob.root)
-	
+		
 		# The composite should include both:
 		expect(both).to be(:include?, __FILE__)
 	end

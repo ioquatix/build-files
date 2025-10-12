@@ -40,12 +40,12 @@ module Build
 			def hash
 				@root.hash
 			end
-		
+			
 			def include?(path)
 				# Would be true if path is a descendant of full_path.
 				path.start_with?(@root)
 			end
-		
+			
 			def rebase(root)
 				self.class.new(@root.rebase(root))
 			end

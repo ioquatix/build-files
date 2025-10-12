@@ -33,7 +33,7 @@ module Build
 			def eql?(other)
 				self.class.eql?(other.class) and @list.eql?(other.list)
 			end
-		
+			
 			def hash
 				@list.hash
 			end

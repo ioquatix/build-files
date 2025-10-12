@@ -72,7 +72,7 @@ module Build
 					
 					if File.exist?(path)
 						modified_time = File.mtime(path)
-					
+						
 						if last_time = last_times.delete(path)
 							# Path was valid last update:
 							if modified_time != last_time
@@ -86,9 +86,9 @@ module Build
 							
 							# puts "Added: #{path}"
 						end
-					
+						
 						@times[path] = modified_time
-					
+						
 						unless File.directory?(path)
 							file_times << FileTime.new(path, modified_time)
 						end

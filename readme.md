@@ -2,7 +2,7 @@
 
 Build::Files is a set of idiomatic classes for dealing with paths and monitoring directories. File paths are represented with both root and relative parts which makes copying directory structures intuitive.
 
-[![Development Status](/workflows/Test/badge.svg)](/actions?workflow=Test)
+[![Development Status](https://github.com/ioquatix/build-files/workflows/Test/badge.svg)](https://github.com/ioquatix/build-files/actions?workflow=Test)
 
 ## Installation
 
@@ -33,6 +33,10 @@ The basic structure is the `Path`. Paths are stored with a root and relative par
     => "baz"
 
 Paths can be coerced to strings and thus are suitable arguments to `exec`/`system` functions.
+
+## Releases
+
+There are no documented releases.
 
 ## Contributing
 
