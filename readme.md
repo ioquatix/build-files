@@ -20,23 +20,13 @@ Or install it yourself as:
 
 ## Usage
 
-The basic structure is the `Path`. Paths are stored with a root and relative part. By default, if no root is specified, it is the `dirname` part.
-
-    require 'build/files'
-    
-    path = Build::Files::Path("/foo/bar/baz")
-    => "/foo/bar"/"baz"
-    
-    > path.root
-    => "/foo/bar"
-    > path.relative_path
-    => "baz"
-
-Paths can be coerced to strings and thus are suitable arguments to `exec`/`system` functions.
+Please see the [project documentation](https://github.com/ioquatix/build-files) for more details.
 
 ## Releases
 
-There are no documented releases.
+Please see the [project releases](https://github.com/ioquatix/build-filesreleases/index) for all releases.
+
+### v1.10.0
 
 ## Contributing
 
