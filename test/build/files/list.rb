@@ -157,6 +157,36 @@ describe Build::Files::Paths do
 		expect(Paths::NONE.count).to be == 0
 	end
 	
+	it "can compare with different class using ==" do
+		paths = Paths.new(path)
+		
+		# Should use default == behavior for incompatible types:
+		expect(paths).not.to be == "not a list"
+		expect(paths).not.to be == 42
+	end
+	
+	it "can compare list subclasses with ==" do
+		paths = Paths.new(path)
+		directory = Directory.new(__dir__)
+		
+		# Different subclasses should compare via to_a.sort
+		# They won't be equal, but this exercises that code path
+		expect(paths == directory).to be == false
+	end
+	
+	it "can use with block to collect paths" do
+		glob = Glob.new(__dir__, "*.rb")
+		
+		collected_paths = []
+		result = glob.with(extension: ".txt") do |original, updated|
+			collected_paths << updated
+		end
+		
+		expect(result).to be_a Paths
+		expect(collected_paths).not.to be(:empty?)
+		expect(collected_paths.first.to_s).to be(:end_with?, ".txt")
+	end
+	
 	it "can be used as key in hash" do
 		cache = {}
 		
@@ -170,5 +200,113 @@ describe Build::Files::Paths do
 		
 		expect(paths.count).to be == 3
 		expect(paths).to be(:include?, Path.new("/foo/bar"))
+	end
+end
+
+describe "Composite operations" do
+	let(:path_a) {Path.new("/foo/bar")}
+	let(:path_b) {Path.new("/foo/baz")}
+	
+	it "can get hash from composite" do
+		paths_a = Paths.new(path_a)
+		paths_b = Paths.new(path_b)
+		
+		composite = paths_a + paths_b
+		hash_value = composite.hash
+		expect(hash_value).to be_a Integer
+	end
+	
+	it "can add composite to another list" do
+		paths_a = Paths.new(path_a)
+		paths_b = Paths.new(path_b)
+		composite = paths_a + paths_b
+		paths_c = Paths.new(Path.new("/foo/qux"))
+		
+		combined = composite + paths_c
+		expect(combined).to be_a Composite
+		expect(combined.count).to be == 3
+	end
+	
+	it "can add two composites together" do
+		paths_a = Paths.new(path_a)
+		paths_b = Paths.new(path_b)
+		composite1 = paths_a + paths_b
+		
+		paths_c = Paths.new(Path.new("/foo/qux"))
+		paths_d = Paths.new(Path.new("/foo/quux"))
+		composite2 = paths_c + paths_d
+		
+		# Add composite to composite - tests line 20
+		combined = composite1 + composite2
+		expect(combined).to be_a Composite
+		expect(combined.count).to be == 4
+	end
+	
+	it "can add a directory list to composite" do
+		paths_a = Paths.new(path_a)
+		paths_b = Paths.new(path_b)
+		composite = paths_a + paths_b
+		
+		# Create a directory (which is a List subclass)
+		dir = Directory.new(__dir__)
+		
+		# This should test adding a List type to composite
+		combined = composite + dir
+		expect(combined).to be_a Composite
+	end
+	
+	it "can compare list with its subclass" do
+		# Define a custom subclass of Paths to test the inheritance comparison
+		custom_list_class = Class.new(Paths)
+		
+		# Create an instance of the parent class
+		paths = Paths.new([path_a, path_b])
+		
+		# Create an instance of the custom subclass with same content
+		custom_list = custom_list_class.new([path_a, path_b])
+		
+		# When comparing subclass with parent class:
+		# self.class == other.class -> false (Paths != CustomListClass)
+		# other.kind_of? self.class -> true (CustomListClass is a kind of Paths)
+		# This tests line 37: self.to_a.sort == other.to_a.sort
+		expect(paths).to be == custom_list
+	end
+	
+	it "can rebase composite" do
+		paths_a = Paths.new(path_a)
+		paths_b = Paths.new(path_b)
+		composite = paths_a + paths_b
+		rebased = composite.rebase("/new/root")
+		
+		expect(rebased).to be_a Composite
+	end
+	
+	it "can convert composite to paths" do
+		paths_a = Paths.new(path_a)
+		paths_b = Paths.new(path_b)
+		composite = paths_a + paths_b
+		paths = composite.to_paths
+		
+		expect(paths).to be_a Composite
+	end
+end
+
+describe "Glob operations" do
+	it "can rebase glob" do
+		glob = Glob.new("/foo", "*.rb")
+		rebased = glob.rebase("/new/root")
+		
+		expect(rebased).to be_a Glob
+		expect(rebased.root).to be == "/new/root"
+	end
+end
+
+describe "Path list operations" do
+	it "can use path.list helper" do
+		path = Path.new("/foo/bar")
+		paths = path.list("baz", "qux")
+		
+		expect(paths).to be_a Paths
+		expect(paths.count).to be == 2
 	end
 end

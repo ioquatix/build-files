@@ -17,6 +17,14 @@ describe Build::Files::Path do
 		expect(Build::Files::Path.expand("foo", "/bar")).to be == "/bar/foo"
 	end
 	
+	it "should expand absolute path" do
+		expect(Build::Files::Path.expand("/absolute/path")).to be == "/absolute/path"
+	end
+	
+	it "should get root from string path" do
+		expect(Build::Files::Path.root("/foo/bar/baz")).to be == "/foo/bar"
+	end
+	
 	it "should give current path" do
 		path = Build::Files::Path.new("/a/b/c/file.cpp")
 		
@@ -87,6 +95,43 @@ describe Build::Files::Path.new("/foo") do
 		expect(parent.root).to be == ""
 		expect(parent.relative_path).to be == ""
 		expect(parent.full_path).to be == "/"
+	end
+end
+
+describe Build::Files::Path.new("/a/b/c/d/e/f") do
+	it "can compute multiple parent levels" do
+		# Test the while loop in parent that reduces root size
+		path = subject
+		parent = path.parent
+		
+		expect(parent.full_path).to be == "/a/b/c/d/e"
+		
+		# Go up multiple levels
+		grandparent = parent.parent
+		expect(grandparent.full_path).to be == "/a/b/c/d"
+	end
+end
+
+describe Build::Files::Path.new("/a/b/c/d/e/f/g/h/i/j", "/a/b/c/d/e/f/g/h") do
+	it "can compute parent with smaller root than full path" do
+		# This tests the while loop: root.size > full_path.size
+		parent = subject.parent
+		# Parent is at /a/b/c/d/e/f/g/h/i with root /a/b/c/d/e/f/g/h
+		expect(parent.full_path).to be == "/a/b/c/d/e/f/g/h/i"
+		
+		grandparent = parent.parent
+		# Grandparent is at /a/b/c/d/e/f/g/h with root reduced
+		expect(grandparent.full_path).to be == "/a/b/c/d/e/f/g/h"
+	end
+	
+	it "can compute parent when root is deeper than dirname" do
+		# Create a path where root is much longer than the parent's full path
+		# This should trigger the while loop at line 138-140: while root.size > full_path.size
+		path = Build::Files::Path.new("/a/b", "/a/b/c/d/e/f/g/h/i")
+		parent = path.parent
+		
+		# The parent should be /a with a reduced root
+		expect(parent.full_path).to be == "/a"
 	end
 end
 

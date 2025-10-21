@@ -17,6 +17,9 @@ module Build
 			class FileTime
 				include Comparable
 				
+				# Initialize a file time record.
+				# @parameter path [Path] The file path.
+				# @parameter time [Time] The modification time.
 				def initialize(path, time)
 					@path = path
 					@time = time
@@ -25,15 +28,23 @@ module Build
 				attr :path
 				attr :time
 				
+				# Compare file times for ordering.
+				# @parameter other [FileTime] The other file time to compare.
+				# @returns [Integer] -1, 0, or 1 for less than, equal, or greater than.
 				def <=> other
 					@time <=> other.time
 				end
 				
+				# Generate a string representation for debugging.
+				# @returns [String] A debug string showing path and time.
 				def inspect
 					"<FileTime #{@path.inspect} #{@time.inspect}>"
 				end
 			end
 			
+			# Initialize file state tracking.
+			# @parameter files [List] The list of files to track.
+			# @raises [ArgumentError] If files is not a Files::List.
 			def initialize(files)
 				raise ArgumentError.new("Invalid files list: #{files}") unless Files::List === files
 				
@@ -55,6 +66,8 @@ module Build
 			
 			def_delegators :@files, :each, :roots, :count
 			
+			# Update the state by checking all files for changes.
+			# @returns [Boolean] True if any files were added, changed, removed, or are missing.
 			def update!
 				last_times = @times
 				@times = {}
@@ -111,14 +124,20 @@ module Build
 			attr :oldest_time
 			attr :newest_time
 			
+			# Check if any files are missing.
+			# @returns [Boolean] True if any files do not exist.
 			def missing?
 				!@missing.empty?
 			end
 			
+			# Check if the state is empty.
+			# @returns [Boolean] True if no files are being tracked.
 			def empty?
 				@times.empty?
 			end
 			
+			# Generate a string representation for debugging.
+			# @returns [String] A debug string showing state changes.
 			def inspect
 				"<State Added:#{@added} Removed:#{@removed} Changed:#{@changed} Missing:#{@missing}>"
 			end
@@ -149,6 +168,10 @@ module Build
 				return true
 			end
 			
+			# Check if outputs are dirty with respect to inputs.
+			# @parameter inputs [State] The input files state.
+			# @parameter outputs [State] The output files state.
+			# @returns [Boolean] True if outputs need to be regenerated.
 			def self.dirty?(inputs, outputs)
 				outputs.dirty?(inputs)
 			end

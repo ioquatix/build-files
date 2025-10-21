@@ -30,6 +30,8 @@ module Build
 				end
 			end
 			
+			# Copy the path to a destination.
+			# @parameter destination [Path] The destination path.
 			def copy(destination)
 				if directory?
 					destination.create
@@ -43,6 +45,8 @@ module Build
 				FileUtils.touch(self.to_s)
 			end
 			
+			# Get file statistics.
+			# @returns [File::Stat] The file statistics.
 			def stat
 				File.stat(self.to_s)
 			end
@@ -57,14 +61,20 @@ module Build
 				File.directory?(self.to_s)
 			end
 			
+			# Check if the path refers to a regular file.
+			# @returns [Boolean] True if the path is a file.
 			def file?
 				File.file?(self.to_s)
 			end
 			
+			# Check if the path is a symbolic link.
+			# @returns [Boolean] True if the path is a symlink.
 			def symlink?
 				File.symlink?(self.to_s)
 			end
 			
+			# Check if the file is readable.
+			# @returns [Boolean] True if the file can be read.
 			def readable?
 				File.readable?(self.to_s)
 			end
@@ -110,6 +120,8 @@ module Build
 				each(&:delete)
 			end
 			
+			# Copy all files in the list to a destination.
+			# @parameter destination [Path] The destination root path.
 			def copy(destination)
 				each do |path|
 					path.copy(destination / path.relative_path)
