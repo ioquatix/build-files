@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Released under the MIT License.
-# Copyright, 2014-2025, by Samuel Williams.
+# Copyright, 2014-2026, by Samuel Williams.
 
 require "build/files"
 require "build/files/list"
@@ -78,7 +78,7 @@ describe Build::Files::Paths do
 		expect(paths).to be(:intersects?, paths)
 		expect(paths).not.to be(:intersects?, Paths::NONE)
 		
-		mapped_paths = paths.map {|path| path + ".o"}
+		mapped_paths = paths.map{|path| path + ".o"}
 		
 		expect(mapped_paths).to be_a(Paths)
 		expect(mapped_paths.roots).to be == paths.roots
@@ -89,7 +89,7 @@ describe Build::Files::Paths do
 		
 		expect(glob.count).to be > 1
 		
-		mapped_paths = glob.map {|path| path + ".txt"}
+		mapped_paths = glob.map{|path| path + ".txt"}
 		
 		expect(glob.roots).to be == mapped_paths.roots
 	end
@@ -133,7 +133,7 @@ describe Build::Files::Paths do
 	it "maps paths with new extension" do
 		glob = Glob.new(__dir__, "*.rb")
 		
-		paths = glob.map {|path| path.append ".txt"}
+		paths = glob.map{|path| path.append ".txt"}
 		
 		expect(paths.first).to be == (glob.first.append ".txt")
 		expect(paths.first.to_s).to be(:end_with?, ".rb.txt")

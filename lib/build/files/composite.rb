@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Released under the MIT License.
-# Copyright, 2019-2025, by Samuel Williams.
+# Copyright, 2019-2026, by Samuel Williams.
 
 require_relative "list"
 
@@ -84,7 +84,7 @@ module Build
 			# @parameter path [Path] The path to check.
 			# @returns [Boolean] True if any list in the composite includes the path.
 			def include?(path)
-				@files.any? {|list| list.include?(path)}
+				@files.any?{|list| list.include?(path)}
 			end
 			
 			# Rebase all lists in the composite to a new root.

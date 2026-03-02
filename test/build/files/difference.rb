@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Released under the MIT License.
-# Copyright, 2025, by Samuel Williams.
+# Copyright, 2025-2026, by Samuel Williams.
 
 require "build/files"
 require "build/files/difference"
@@ -9,15 +9,19 @@ require "build/files/difference"
 include Build::Files
 
 describe Build::Files::Difference do
-	let(:all_paths) {Paths.new([
-		Path.new("/foo/bar"),
-		Path.new("/foo/baz"),
-		Path.new("/foo/qux")
-	])}
+	let(:all_paths) do
+		Paths.new([
+			Path.new("/foo/bar"),
+			Path.new("/foo/baz"),
+			Path.new("/foo/qux")
+		])
+	end
 	
-	let(:exclude_paths) {Paths.new([
-		Path.new("/foo/baz")
-	])}
+	let(:exclude_paths) do
+		Paths.new([
+			Path.new("/foo/baz")
+		])
+	end
 	
 	it "can create difference" do
 		diff = Difference.new(all_paths, exclude_paths)
