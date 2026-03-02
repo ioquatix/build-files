@@ -117,5 +117,3 @@ module Build
 		end
 	end
 end
-
-require_relative "difference"

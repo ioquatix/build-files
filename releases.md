@@ -1,3 +1,5 @@
 # Releases
 
-## v1.10.0
+## Unreleased
+
+  - Fix circular dependency between `list.rb` and `difference.rb`.

@@ -4,6 +4,7 @@
 # Copyright, 2014-2025, by Samuel Williams.
 
 require_relative "files/list"
+require_relative "files/difference"
 require_relative "files/composite"
 require_relative "files/paths"
 require_relative "files/glob"
