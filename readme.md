@@ -26,7 +26,9 @@ Please see the [project documentation](https://github.com/ioquatix/build-files) 
 
 Please see the [project releases](https://github.com/ioquatix/build-filesreleases/index) for all releases.
 
-### v1.10.0
+### v1.10.2
+
+  - Fix circular dependency between `list.rb` and `difference.rb`.
 
 ## Contributing
 
